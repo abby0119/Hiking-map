@@ -184,9 +184,24 @@ marker.on('popupopen', function (e) {
         e.stopPropagation();
       });
     }
-  });
+
+setTimeout(() => {
+
+      const latlng = e.popup._latlng;
+      const px = map.project(latlng);
+
+      px.y -= e.popup._container.clientHeight / 2;
+
+      map.panTo(map.unproject(px), {
+        animate: true,
+        duration: 0.6
+      });
+
+    }, 50);
 
 });
+  });
+
 </script>
 
 </body>
