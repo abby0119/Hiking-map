@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8" />
+  <title>我們的地圖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+  <style>
+    body { margin:0; padding:0; }
+    #map { width:100%; height:100vh; }
+
+     .photo-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px; /* ⭐ 原本12 → 減少1/3 */
+  padding-bottom: 6px;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ⭐ 細透明滑桿 */
+.photo-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+.photo-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.photo-scroll::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.25);
+  border-radius: 10px;
+}
+  </style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+
+/* 🌿 1. 地圖 */
+var map = L.map('map').setView([25.1726, 121.5004], 13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap'
+}).addTo(map);
+
+
+/* 🌿 2. 狀態顏色 */
+const iconColor = {
+  alone: "#64b5f6",     // 💙 自己
+  together: "#ff9800",  // 🧡 昱安
+  repeat: "#c2185b"     // 💜 多次
+};
+
+
+/* 🌿 3. 水滴 icon */
+function createPinIcon(color) {
+  return L.divIcon({
+    className: "",
+    html: `<div style="
+      width: 18px;
+      height: 18px;
+      background: ${color};
+      border: 2px solid white;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    "></div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
+  });
+}
+
+
+/* 🌿 4. 資料（已升級多照片版本） */
+const data = [
+  [
+    "2026-08-16",
+    25.17290093590673, 
+    121.50003254869834,
+    "向天池",
+    "二子坪>面天山>向天山>向天池",
+    [
+      { img: "plant1.jpg", title: "狹瓣八仙花" },
+    ],
+    "今天自己去爬山，看到一片乾燥的狹瓣八仙花萼片，採回家送昱安",
+    "alone"
+  ],
+
+  [
+    "2025-09-13",
+    25.183906,
+    121.519981,
+    "二子坪",
+    "大屯自然公園>二子坪>大屯車道",
+    [
+      { img: "plant2.jpg", title: "毛藥花" },
+      { img: "plant2b.jpg", title: "杜英落葉" },
+      { img: "plant2c.jpg", title: "不怕人的樹鵲" }
+    ],
+    "今天昱安感冒，還是自己爬山，撿了紅色杜英落葉，希望寶貝能快快好起來",
+    "alone"
+  ]
+];
+
+
+/* 🌿 5. 建立 markers */
+data.forEach(item => {
+
+  let [
+    date, lat, lng,
+    place, route,
+    photos,
+    note, status
+  ] = item;
+
+  let color = iconColor[status] || "#64b5f6";
+
+  let marker = L.marker([lat, lng], {
+    icon: createPinIcon(color)
+  }).addTo(map);
+
+ marker.bindPopup(`
+
+  <div style="width:240px; font-family:sans-serif;">
+
+    <b>🌿 ${date}</b><br>
+    📍 <b>${place}</b><br>
+    ${route}
+    <br><br>
+
+    <!-- 🌿 照片滑動區 -->
+    <div class="photo-scroll">
+
+  ${photos.map(p => `
+    <div style="
+      min-width:160px;
+      flex-shrink:0;
+    ">
+
+      <img src="${p.img}" style="
+        width:160px;
+        height:auto;
+        border-radius:10px;
+        display:block;
+      ">
+
+      <div style="
+        font-size:12px;
+        color:#444;
+        margin-top:4px;
+        text-align:left;  /* ⭐ 改靠左 */
+      ">
+        ${p.title}
+      </div>
+
+    </div>
+  `).join("")}
+
+</div>
+
+    <br>
+    ${note}
+
+  </div>
+`, {
+  autoPan: false   // ⭐ 防止地圖干擾滑動
+});
+
+marker.on('popupopen', function (e) {
+    const container = e.popup.getElement();
+    const scroller = container.querySelector('.photo-scroll');
+
+    if (scroller) {
+      L.DomEvent.disableClickPropagation(scroller);
+      L.DomEvent.disableScrollPropagation(scroller);
+
+      scroller.addEventListener('wheel', function (e) {
+        e.stopPropagation();
+      });
+    }
+  });
+
+});
+</script>
+
+</body>
+</html>
