@@ -13,10 +13,10 @@
 
      .photo-scroll {
   display: flex;
+  align-items: flex-start;
   overflow-x: auto;
   gap: 8px; /* ⭐ 原本12 → 減少1/3 */
   padding-bottom: 6px;
-
   -webkit-overflow-scrolling: touch;
 }
 
@@ -80,30 +80,81 @@ function createPinIcon(color) {
 /* 🌿 4. 資料（已升級多照片版本） */
 const data = [
   [
-    "2026-08-16",
+    "2025.08.16",
     25.17290093590673, 
     121.50003254869834,
     "向天池",
     "二子坪>面天山>向天山>向天池",
     [
-      { img: "plant1.jpg", title: "狹瓣八仙花" },
+      { img: "photo1.jpg", title: "狹瓣八仙花" },
     ],
-    "今天自己去爬山，看到一片乾燥的狹瓣八仙花萼片，採回家送昱安",
+    "今天自己去爬山，看到一片乾燥的狹瓣八仙花萼片在發光，採回家送昱安",
+    "alone"
+  ],
+
+[
+    "2025.08.23-25",
+    22.179908, 
+    120.891753,
+    "墾丁",
+    "Day1龍磐公園>星星草原>Day2旭海>199線道>Day3瑪家",
+    [
+      { img: "photo2.jpg", title: "厚殼鴨腱藤" },
+      { img: "photo2a.jpg", title: "彩色石頭和貝殼" }
+    ],
+    "這周末去墾丁出差，在旭海撿海漂種子，最大最圓最喜歡的厚殼鴨腱藤送給寶貝人",
     "alone"
   ],
 
   [
-    "2025-09-13",
+    "2025.09.13",
     25.183906,
     121.519981,
     "二子坪",
     "大屯自然公園>二子坪>大屯車道",
     [
-      { img: "plant2.jpg", title: "毛藥花" },
-      { img: "plant2b.jpg", title: "杜英落葉" },
-      { img: "plant2c.jpg", title: "不怕人的樹鵲" }
+      { img: "photo3.jpg", title: "毛藥花" },
+      { img: "photo3a.jpg", title: "杜英落葉" },
+      { img: "photo3b.jpg", title: "不怕人的樹鵲" }
     ],
-    "今天昱安感冒，還是自己爬山，撿了紅色杜英落葉，希望寶貝能快快好起來",
+    "今天昱安感冒，我還是自己爬山，撿了紅色杜英落葉，希望寶貝能快快好起來",
+    "alone"
+  ],
+
+[
+    "2025.09.20",
+    25.149086,
+    121.588539,
+    "荷蘭古道",
+    "萬溪產道支線頂山站>荷蘭古道>北五指山草原",
+    [
+      { img: "photo4.jpg", title: "八角蓮長出第二片葉子" },
+      { img: "photo4a.jpg", title: "仰望墨點櫻桃" },
+      { img: "photo4b.jpg", title: "鄧氏胡頹子結實纍纍" },
+      { img: "photo4c.jpg", title: "梵天花" },
+      { img: "photo4d.jpg", title: "草原藍天" },
+      { img: "photo4e.jpg", title: "菇菇" }
+    ],
+    "我們第一次一起爬山，帶寶貝看八角蓮，是這幾個月來最快樂的周末",
+    "together"
+  ],
+
+[
+    "2025.09.27-30",
+    24.459073127542787,
+    121.26030452897538,
+    "大霸尖山",
+    "Day0觀霧山莊>Day2大鹿林道>九九山莊>Day3大霸尖山>Day4下山",
+    [
+      { img: "photo5.jpg", title: "雙鋸齒玄參" },
+      { img: "photo5a.jpg", title: "小木通" },
+      { img: "photo5b.jpg", title: "星空大霸" },
+      { img: "photo5c.jpg", title: "曙光(快累死了)" },
+      { img: "photo5d.jpg", title: "向山前進" },
+      { img: "photo5e.jpg", title: "看到大霸尖山酢漿草就有力氣繼續往前走了" },
+      { img: "photo5f.jpg", title: "化香樹果實(回程才有力氣撿東西)" }
+    ],
+    "這個週末我去爬大霸尖山，感謝寶貝載我去新竹，希望以後能一起去爬百岳",
     "alone"
   ]
 ];
@@ -127,10 +178,24 @@ data.forEach(item => {
 
  marker.bindPopup(`
 
-  <div style="width:230px; font-family:sans-serif;">
+  <div style="
+   width:220px; 
+   height:360px; 
+   font-family:sans-serif; 
+   display:flex;
+   flex-direction:column;
+   overflow-y:auto;
+   height:100%;
+   paddin:4px 2px;
+">
 
     <b>🌿 ${date}</b><br>
-    📍 <b>${place}</b><br>
+
+    <div style="display:flex; align-items:center; gap:4px;">
+     <span>📍</span>
+     <b>${place}</b>
+    </div>
+
     ${route}
     <br><br>
 
@@ -139,22 +204,36 @@ data.forEach(item => {
 
   ${photos.map(p => `
     <div style="
-      min-width:160px;
       flex-shrink:0;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-start;
+      justify-content:flex-start;
     ">
 
       <img src="${p.img}" style="
-        width:160px;
-        height:auto;
+        width:auto;
+        height:200px;
         border-radius:10px;
         display:block;
       ">
 
       <div style="
+        width:0;
+        min-width:100%;
+        max-width:100%;
         font-size:12px;
         color:#444;
-        margin-top:4px;
-        text-align:left;  /* ⭐ 改靠左 */
+        margin-top:8px;
+        flex-grow:1;        /* ⭐ 讓照片區撐開 */
+        display:flex;
+        align-items:flex-start;
+        text-align:left;
+        white-space:normal;
+        overflow-wrap:anywhere;
+        word-break:break-word;
+        line-height:1.35;
+        box-sizing:border-box;
       ">
         ${p.title}
       </div>
