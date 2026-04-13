@@ -410,51 +410,6 @@ function bindPopupInteractions(marker, map) {
         ev.stopPropagation();
       });
     });
-
-    function adjustPopupIntoView() {
-      const popupEl = e.popup._container;
-      const mapEl = map.getContainer();
-
-      if (!popupEl || !mapEl) return;
-
-      const popupRect = popupEl.getBoundingClientRect();
-      const mapRect = mapEl.getBoundingClientRect();
-
-      // 想保留的上下邊界
-      const topPadding = 20;
-      const bottomPadding = 20;
-
-      let dy = 0;
-
-      // popup 太高，頂部被切到
-      if (popupRect.top < mapRect.top + topPadding) {
-        dy = popupRect.top - (mapRect.top + topPadding);
-      }
-      // popup 太低，底部快超出去
-      else if (popupRect.bottom > mapRect.bottom - bottomPadding) {
-        dy = popupRect.bottom - (mapRect.bottom - bottomPadding);
-      }
-
-      if (dy !== 0) {
-        map.panBy([0, dy], {
-          animate: true,
-          duration: 0.5
-        });
-      }
-    }
-
-    // 先調一次
-    setTimeout(adjustPopupIntoView, 80);
-
-    // 圖片載入完再調一次
-    const imgs = container.querySelectorAll('img');
-    imgs.forEach(img => {
-      if (!img.complete) {
-        img.addEventListener('load', () => {
-          setTimeout(adjustPopupIntoView, 30);
-        }, { once: true });
-      }
-    });
   });
 }
 
@@ -491,9 +446,11 @@ data.forEach((item, idx) => {
   }
 
   marker.bindPopup(popupHTML, {
-    autoPan: false,
-    maxWidth: 320,
-    minWidth: 260
+    autoPan: true,
+    keepInView: true,
+    maxWidth: 260,
+    minWidth: 220,
+    offset: [0, -10]
   });
 
   bindPopupInteractions(marker, map);
