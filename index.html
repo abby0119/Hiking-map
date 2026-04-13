@@ -407,22 +407,31 @@ function bindPopupInteractions(marker, map) {
     });
 
     setTimeout(() => {
-      const latlng = e.popup._latlng;
-      const px = map.project(latlng);
-      
-      const isMobile = window.innerWidth <= 768;
+  const popupEl = e.popup._container;
+  const mapEl = map.getContainer();
 
-      if (isMobile) {
-        px.y -= e.popup._container.clientHeight / 2.3;
-      } else {
-        px.y -= e.popup._container.clientHeight / 5;
-      }
+  if (!popupEl || !mapEl) return;
 
-      map.panTo(map.unproject(px), {
-        animate: true,
-        duration: 0.6
-      });
-    }, 50);
+  const popupRect = popupEl.getBoundingClientRect();
+  const mapRect = mapEl.getBoundingClientRect();
+
+  // 地圖可視區中心
+  const mapCenterX = mapRect.left + mapRect.width / 2;
+  const mapCenterY = mapRect.top + mapRect.height / 2;
+
+  // popup 目前中心
+  const popupCenterX = popupRect.left + popupRect.width / 2;
+  const popupCenterY = popupRect.top + popupRect.height / 2;
+
+  // 算出要平移多少，讓 popup 中心接近地圖中心
+  const dx = popupCenterX - mapCenterX;
+  const dy = popupCenterY - mapCenterY;
+
+  map.panBy([dx, dy], {
+    animate: true,
+    duration: 0.6
+  });
+}, 80);
   });
 }
 
