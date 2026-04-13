@@ -48,14 +48,23 @@
       display: none;
     }
 
-    .visit-page {
-      flex: 0 0 100%;
-      width: 100%;
-      min-width: 100%;
-      max-width: 100%;
-      scroll-snap-align: start;
-      box-sizing: border-box;
-    }
+   .visit-page {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  scroll-snap-align: start;
+  box-sizing: border-box;
+  height: 100%;
+  overflow: hidden;
+}
+
+.visit-page-inner {
+  height: 100%;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding-right: 2px;
+}
 
     .visit-nav {
       display: flex;
@@ -334,34 +343,35 @@ function createRepeatPopup(place, visits, popupId) {
 
       <div id="visit-scroll-${popupId}" class="visit-scroll">
         ${visits.map(visit => `
-          <div class="visit-page">
-            <div style="font-size:16px;">
-              🌿 <b>${visit.date}</b><br><br>
-            </div>
-
-            <div style="display:flex; align-items:center; gap:4px; font-size:16px;">
-              <span>📍</span>
-              <b>${place}</b>
-            </div>
-
-            <div style="font-size:14px;">
-              ${visit.route}
-              <br><br>
-            </div>
-
-            ${createPhotoHTML(visit.photos)}
-
-            <div style="font-size:14px;">
-              <br>
-              ${visit.note}
-            </div>
-          </div>
-        `).join("")}
+  <div class="visit-page">
+    <div class="visit-page-inner">
+      <div style="font-size:16px;">
+        🌿 <b>${visit.date}</b><br><br>
       </div>
+
+      <div style="display:flex; align-items:center; gap:4px; font-size:16px;">
+        <span>📍</span>
+        <b>${place}</b>
+      </div>
+
+      <div style="font-size:14px;">
+        ${visit.route}
+        <br><br>
+      </div>
+
+      ${createPhotoHTML(visit.photos)}
+
+      <div style="font-size:14px;">
+        <br>
+        ${visit.note}
+      </div>
+    </div>
+  </div>
+`).join("")}
 
       <div class="visit-nav">
         <button class="visit-btn" onclick="scrollVisit('${popupId}', -1)">‹</button>
-        <div id="visit-indicator-${popupId}" class="visit-indicator">1 / ${visits.length}</div>
+        <div id="visit-indicator-${popupId}" class="visit-indicator">第 1 / ${visits.length} 次</div>
         <button class="visit-btn" onclick="scrollVisit('${popupId}', 1)">›</button>
       </div>
     </div>
@@ -389,8 +399,13 @@ function scrollVisit(popupId, direction) {
   });
 
   setTimeout(() => {
-    if (indicator) indicator.textContent = `${index + 1} / ${maxIndex + 1}`;
-  }, 180);
+    const pages = scroller.querySelectorAll('.visit-page-inner');
+    pages.forEach(page => page.scrollTop = 0);
+
+    if (indicator) {
+      indicator.textContent = `第 ${index + 1} / ${maxIndex + 1} 次`;
+    }
+  }, 250);
 }
 
 
@@ -420,13 +435,23 @@ function bindPopupInteractions(marker, map) {
 
       const indicator = container.querySelector('.visit-indicator');
 
-      visitScroller.addEventListener('scroll', function () {
-        const pageWidth = visitScroller.clientWidth;
-        if (!pageWidth) return;
-        const index = Math.round(visitScroller.scrollLeft / pageWidth);
-        const total = visitScroller.children.length;
-        if (indicator) indicator.textContent = `${index + 1} / ${total}`;
-      });
+     visitScroller.addEventListener('scroll', function () {
+  const pageWidth = visitScroller.clientWidth;
+  if (!pageWidth) return;
+
+  const index = Math.round(visitScroller.scrollLeft / pageWidth);
+  const total = visitScroller.children.length;
+
+  if (indicator) {
+    indicator.textContent = `第 ${index + 1} / ${total} 次`;
+  }
+
+  clearTimeout(visitScroller._scrollTimer);
+  visitScroller._scrollTimer = setTimeout(() => {
+    const pages = visitScroller.querySelectorAll('.visit-page-inner');
+    pages.forEach(page => page.scrollTop = 0);
+  }, 120);
+});
     }
 
     setTimeout(() => {
