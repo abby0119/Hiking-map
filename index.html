@@ -409,7 +409,14 @@ function bindPopupInteractions(marker, map) {
     setTimeout(() => {
       const latlng = e.popup._latlng;
       const px = map.project(latlng);
-      px.y -= e.popup._container.clientHeight / 5;
+      
+      const isMobile = window.innerWidth <= 768;
+
+      if (isMobile) {
+        px.y -= e.popup._container.clientHeight / 2.3;
+      } else {
+        px.y -= e.popup._container.clientHeight / 5;
+      }
 
       map.panTo(map.unproject(px), {
         animate: true,
