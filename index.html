@@ -8,96 +8,97 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
   <style>
-    body { margin:0; padding:0; }
-    #map { width:100%; height:100vh; }
+  body { margin:0; padding:0; }
+  #map { width:100%; height:100vh; }
 
-    .photo-scroll {
-      display: flex;
-      align-items: flex-start;
-      overflow-x: auto;
-      gap: 8px;
-      padding-bottom: 6px;
-      -webkit-overflow-scrolling: touch;
-    }
+  .photo-scroll {
+    display: flex;
+    align-items: flex-start;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 6px;
+    -webkit-overflow-scrolling: touch;
+  }
 
-    .photo-scroll::-webkit-scrollbar {
-      height: 4px;
-    }
-    .photo-scroll::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .photo-scroll::-webkit-scrollbar-thumb {
-      background: rgba(0,0,0,0.25);
-      border-radius: 10px;
-    }
+  .photo-scroll::-webkit-scrollbar {
+    height: 4px;
+  }
+  .photo-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .photo-scroll::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.25);
+    border-radius: 10px;
+  }
 
-    /* 🌿 多次 visit 橫向滑動 */
-    .visit-scroll {
-      display: flex;
-      flex: 1;
-      width: 100%;
-      overflow-x: auto;
-      overflow-y: hidden;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scroll-behavior: smooth;
-      box-sizing: border-box;
-    }
+  .visit-scroll {
+    display: flex;
+    width: 100%;
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+    touch-action: pan-x;
+  }
 
-    .visit-scroll::-webkit-scrollbar {
-      display: none;
-    }
+  .visit-scroll::-webkit-scrollbar {
+    display: none;
+  }
 
-   .visit-page {
-  flex: 0 0 100%;
-  width: 100%;
-  min-width: 100%;
-  max-width: 100%;
-  scroll-snap-align: start;
-  box-sizing: border-box;
-  height: 100%;
-  overflow: hidden;
-}
+  .visit-page {
+    flex: 0 0 100%;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
 
-.visit-page-inner {
-  height: 100%;
-  overflow-y: auto;
-  box-sizing: border-box;
-  padding-right: 2px;
-  padding-bottom: 16px;
-}
+  .visit-page-inner {
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding-right: 2px;
+    padding-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
+  }
 
-    .visit-nav {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-      padding-bottom: 2px;
-    }
+  .visit-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-shrink: 0;
+  }
 
-    .visit-btn {
-      border: none;
-      background: #f3f3f3;
-      border-radius: 999px;
-      width: 30px;
-      height: 30px;
-      font-size: 18px;
-      cursor: pointer;
-      line-height: 1;
-    }
+  .visit-btn {
+    border: none;
+    background: #f3f3f3;
+    border-radius: 999px;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+  }
 
-    .visit-btn:hover {
-      background: #e5e5e5;
-    }
+  .visit-btn:hover {
+    background: #e5e5e5;
+  }
 
-    .visit-indicator {
-      font-size: 12px;
-      color: #666;
-      min-width: 56px;
-      text-align: center;
-    }
-  </style>
+  .visit-indicator {
+    font-size: 12px;
+    color: #666;
+    min-width: 72px;
+    text-align: center;
+  }
+</style>
 </head>
 
 <body>
@@ -302,7 +303,6 @@ function createSinglePopup(date, place, route, photos, note) {
       padding:4px 2px;
       box-sizing:border-box;
     ">
-
       <div style="font-size:16px;">
         🌿 <b>${date}</b><br><br>
       </div>
@@ -317,10 +317,14 @@ function createSinglePopup(date, place, route, photos, note) {
         <br><br>
       </div>
 
-      ${createPhotoHTML(photos)}
+      ${createPhotoHTML(photos, 260)}
 
-      <div style="font-size:14px;">
-        <br>
+      <div style="
+        font-size:14px;
+        line-height:1.5;
+        margin-top:10px;
+        padding-bottom:8px;
+      ">
         ${note}
       </div>
     </div>
@@ -337,43 +341,48 @@ function createRepeatPopup(place, visits, popupId) {
       font-family:sans-serif;
       display:flex;
       flex-direction:column;
-      overflow-y:auto;
-      padding:4px 2px;
       box-sizing:border-box;
+      padding:4px 2px;
+      overflow:hidden;
     ">
-
-      <div id="visit-scroll-${popupId}" class="visit-scroll">
-        ${visits.map(visit => `
-  <div class="visit-page">
-    <div class="visit-page-inner">
-      <div style="font-size:16px;">
-        🌿 <b>${visit.date}</b><br><br>
-      </div>
-
-      <div style="display:flex; align-items:center; gap:4px; font-size:16px;">
-        <span>📍</span>
-        <b>${place}</b>
-      </div>
-
-      <div style="font-size:14px;">
-        ${visit.route}
-        <br><br>
-      </div>
-
-      ${createPhotoHTML(visit.photos, 220)}
-
-      <div style="font-size:14px;">
-        <br>
-        ${visit.note}
-      </div>
-    </div>
-  </div>
-`).join("")}
 
       <div class="visit-nav">
         <button class="visit-btn" onclick="scrollVisit('${popupId}', -1)">‹</button>
         <div id="visit-indicator-${popupId}" class="visit-indicator">第 1 / ${visits.length} 次</div>
         <button class="visit-btn" onclick="scrollVisit('${popupId}', 1)">›</button>
+      </div>
+
+      <div id="visit-scroll-${popupId}" class="visit-scroll" data-current-index="0">
+        ${visits.map(visit => `
+          <div class="visit-page">
+            <div class="visit-page-inner">
+              <div style="font-size:16px;">
+                🌿 <b>${visit.date}</b><br><br>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:4px; font-size:16px;">
+                <span>📍</span>
+                <b>${place}</b>
+              </div>
+
+              <div style="font-size:14px;">
+                ${visit.route}
+                <br><br>
+              </div>
+
+              ${createPhotoHTML(visit.photos, 220)}
+
+              <div style="
+                font-size:14px;
+                line-height:1.5;
+                margin-top:10px;
+                padding-bottom:8px;
+              ">
+                ${visit.note}
+              </div>
+            </div>
+          </div>
+        `).join("")}
       </div>
     </div>
   `;
@@ -386,27 +395,31 @@ function scrollVisit(popupId, direction) {
   const indicator = document.getElementById(`visit-indicator-${popupId}`);
   if (!scroller) return;
 
-  const pageWidth = scroller.clientWidth;
-  const maxIndex = scroller.children.length - 1;
-  let index = Math.round(scroller.scrollLeft / pageWidth);
+  const total = scroller.children.length;
+  let index = parseInt(scroller.dataset.currentIndex || "0", 10);
 
   index += direction;
   if (index < 0) index = 0;
-  if (index > maxIndex) index = maxIndex;
+  if (index > total - 1) index = total - 1;
+
+  const pageWidth = scroller.clientWidth;
 
   scroller.scrollTo({
     left: index * pageWidth,
     behavior: "smooth"
   });
 
-  setTimeout(() => {
-    const pages = scroller.querySelectorAll('.visit-page-inner');
-    pages.forEach(page => page.scrollTop = 0);
+  scroller.dataset.currentIndex = index;
 
-    if (indicator) {
-      indicator.textContent = `第 ${index + 1} / ${maxIndex + 1} 次`;
-    }
-  }, 250);
+  const targetPage = scroller.children[index];
+  if (targetPage) {
+    const inner = targetPage.querySelector('.visit-page-inner');
+    if (inner) inner.scrollTop = 0;
+  }
+
+  if (indicator) {
+    indicator.textContent = `第 ${index + 1} / ${total} 次`;
+  }
 }
 
 
@@ -419,7 +432,6 @@ function bindPopupInteractions(marker, map) {
 
     photoScrollers.forEach(scroller => {
       L.DomEvent.disableClickPropagation(scroller);
-      L.DomEvent.disableScrollPropagation(scroller);
 
       scroller.addEventListener('wheel', function (ev) {
         ev.stopPropagation();
@@ -428,7 +440,6 @@ function bindPopupInteractions(marker, map) {
 
     if (visitScroller) {
       L.DomEvent.disableClickPropagation(visitScroller);
-      L.DomEvent.disableScrollPropagation(visitScroller);
 
       visitScroller.addEventListener('wheel', function (ev) {
         ev.stopPropagation();
@@ -436,23 +447,19 @@ function bindPopupInteractions(marker, map) {
 
       const indicator = container.querySelector('.visit-indicator');
 
-     visitScroller.addEventListener('scroll', function () {
-  const pageWidth = visitScroller.clientWidth;
-  if (!pageWidth) return;
+      visitScroller.addEventListener('scroll', function () {
+        const pageWidth = visitScroller.clientWidth;
+        if (!pageWidth) return;
 
-  const index = Math.round(visitScroller.scrollLeft / pageWidth);
-  const total = visitScroller.children.length;
+        const index = Math.round(visitScroller.scrollLeft / pageWidth);
+        const total = visitScroller.children.length;
 
-  if (indicator) {
-    indicator.textContent = `第 ${index + 1} / ${total} 次`;
-  }
+        visitScroller.dataset.currentIndex = index;
 
-  clearTimeout(visitScroller._scrollTimer);
-  visitScroller._scrollTimer = setTimeout(() => {
-    const pages = visitScroller.querySelectorAll('.visit-page-inner');
-    pages.forEach(page => page.scrollTop = 0);
-  }, 120);
-});
+        if (indicator) {
+          indicator.textContent = `第 ${index + 1} / ${total} 次`;
+        }
+      });
     }
 
     setTimeout(() => {
