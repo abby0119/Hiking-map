@@ -406,32 +406,42 @@ function bindPopupInteractions(marker, map) {
       });
     });
 
-    setTimeout(() => {
-  const popupEl = e.popup._container;
-  const mapEl = map.getContainer();
+    function recenterPopup() {
+      const popupEl = e.popup._container;
+      const mapEl = map.getContainer();
 
-  if (!popupEl || !mapEl) return;
+      if (!popupEl || !mapEl) return;
 
-  const popupRect = popupEl.getBoundingClientRect();
-  const mapRect = mapEl.getBoundingClientRect();
+      const popupRect = popupEl.getBoundingClientRect();
+      const mapRect = mapEl.getBoundingClientRect();
 
-  // 地圖可視區中心
-  const mapCenterX = mapRect.left + mapRect.width / 2;
-  const mapCenterY = mapRect.top + mapRect.height / 2;
+      const mapCenterX = mapRect.left + mapRect.width / 2;
+      const mapCenterY = mapRect.top + mapRect.height / 2;
 
-  // popup 目前中心
-  const popupCenterX = popupRect.left + popupRect.width / 2;
-  const popupCenterY = popupRect.top + popupRect.height / 2;
+      const popupCenterX = popupRect.left + popupRect.width / 2;
+      const popupCenterY = popupRect.top + popupRect.height / 2;
 
-  // 算出要平移多少，讓 popup 中心接近地圖中心
-  const dx = popupCenterX - mapCenterX;
-  const dy = popupCenterY - mapCenterY;
+      const dx = popupCenterX - mapCenterX;
+      const dy = popupCenterY - mapCenterY;
 
-  map.panBy([dx, dy], {
-    animate: true,
-    duration: 0.6
-  });
-}, 80);
+      map.panBy([dx, dy], {
+        animate: true,
+        duration: 0.6
+      });
+    }
+
+    // 先置中一次
+    setTimeout(recenterPopup, 80);
+
+    // 圖片載入完再置中一次，避免桌機圖片撐高 popup
+    const imgs = container.querySelectorAll('img');
+    imgs.forEach(img => {
+      if (!img.complete) {
+        img.addEventListener('load', () => {
+          setTimeout(recenterPopup, 30);
+        }, { once: true });
+      }
+    });
   });
 }
 
