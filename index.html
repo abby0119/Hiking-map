@@ -310,7 +310,7 @@ function createRepeatPopup(place, visits, markerId) {
   const visit = visits[currentIndex];
 
   return `
-    <div class="repeat-popup-root" style="
+    <div style="
       width:260px;
       height:560px;
       font-family:sans-serif;
@@ -318,14 +318,11 @@ function createRepeatPopup(place, visits, markerId) {
       padding:4px 2px;
       box-sizing:border-box;
     ">
-
-      <div class="visit-nav" style="margin-top:14px; margin-bottom:4px;">
+      <div class="visit-nav" style="margin-bottom:8px;">
         <button
           type="button"
           class="visit-btn"
           onclick="event.stopPropagation(); changeVisit('${markerId}', -1); return false;"
-          ontouchstart="event.stopPropagation();"
-          onmousedown="event.stopPropagation();"
         >‹</button>
 
         <div class="visit-indicator">${currentIndex + 1} / ${visits.length}</div>
@@ -334,11 +331,9 @@ function createRepeatPopup(place, visits, markerId) {
           type="button"
           class="visit-btn"
           onclick="event.stopPropagation(); changeVisit('${markerId}', 1); return false;"
-          ontouchstart="event.stopPropagation();"
-          onmousedown="event.stopPropagation();"
         >›</button>
       </div>
-      
+
       <div style="font-size:16px;">
         🌿 <b>${visit.date}</b><br><br>
       </div>
@@ -362,7 +357,6 @@ function createRepeatPopup(place, visits, markerId) {
       ">
         ${visit.note}
       </div>
-      
     </div>
   `;
 }
