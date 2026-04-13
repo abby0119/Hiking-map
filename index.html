@@ -34,13 +34,14 @@
     /* 🌿 多次 visit 橫向滑動 */
     .visit-scroll {
       display: flex;
+      flex: 1;
+      width: 100%;
       overflow-x: auto;
+      overflow-y: hidden;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
-      gap: 0;
-      width: 100%;
-      box-sizing: border-box;
       scroll-behavior: smooth;
+      box-sizing: border-box;
     }
 
     .visit-scroll::-webkit-scrollbar {
@@ -49,9 +50,11 @@
 
     .visit-page {
       flex: 0 0 100%;
+      width: 100%;
+      min-width: 100%;
+      max-width: 100%;
       scroll-snap-align: start;
       box-sizing: border-box;
-      padding: 0;
     }
 
     .visit-nav {
