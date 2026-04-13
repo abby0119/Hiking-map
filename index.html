@@ -149,21 +149,6 @@
   overflow: hidden;
 }
 
-.photo-viewer-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 2;
-  border: none;
-  background: rgba(255,255,255,0.9);
-  border-radius: 999px;
-  width: 34px;
-  height: 34px;
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-}
-
 #photo-viewer-img {
   display: block;
   width: 100%;
@@ -188,7 +173,6 @@
 
 <div id="photo-viewer">
   <div class="photo-viewer-card" id="photo-viewer-card">
-    <button class="photo-viewer-close" type="button" onclick="closePhotoViewer()">×</button>
     <img id="photo-viewer-img" src="" alt="">
   </div>
 </div>
