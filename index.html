@@ -198,6 +198,8 @@ const iconColor = {
   repeat: "#c2185b"
 };
 
+let viewerPhotos = [];
+let viewerIndex = 0;  
 
 /* 🌿 3. 水滴 icon */
 function createPinIcon(color) {
@@ -330,9 +332,11 @@ const repeatMarkers = {};
 
 /* 🌿 6. 共用照片區 HTML */
 function createPhotoHTML(photos, imgHeight = 220) {
+  const photosJson = encodeURIComponent(JSON.stringify(photos));
+
   return `
     <div class="photo-scroll">
-      ${photos.map(p => `
+      ${photos.map((p, i) => `
         <div style="
           flex-shrink:0;
           display:flex;
@@ -340,16 +344,18 @@ function createPhotoHTML(photos, imgHeight = 220) {
           align-items:flex-start;
           justify-content:flex-start;
         ">
-          <img src="${p.img}" 
-          alt="${p.title}"
-          onclick="openPhotoViewer('${p.img}', '${p.title}')"
-          style="
-            width:auto;
-            height:${imgHeight}px;
-            border-radius:10px;
-            display:block;
-            cursor:pointer;
-          ">
+          <img src="${p.img}"
+            alt="${p.title || ''}"
+            class="clickable-photo"
+            data-photos="${photosJson}"
+            data-index="${i}"
+            style="
+              width:auto;
+              height:${imgHeight}px;
+              border-radius:10px;
+              display:block;
+              cursor:pointer;
+            ">
 
           <div style="
             width:0;
@@ -469,6 +475,15 @@ function openOverlay(html) {
   content.innerHTML = html;
   overlay.classList.add('show');
   document.body.style.overflow = 'hidden';
+
+  const photos = content.querySelectorAll('.clickable-photo');
+  photos.forEach(photo => {
+    photo.addEventListener('click', function () {
+      const photosData = JSON.parse(decodeURIComponent(this.dataset.photos));
+      const index = Number(this.dataset.index);
+      openPhotoViewer(photosData, index);
+    });
+  });
 }
 
 function closeOverlay() {
@@ -487,16 +502,43 @@ document.getElementById('overlay-card').addEventListener('click', function (e) {
   e.stopPropagation();
 });
 
-function openPhotoViewer(src, alt = "") {
-  document.getElementById('photo-viewer-img').src = src;
-  document.getElementById('photo-viewer-img').alt = alt;
+function openPhotoViewer(photos, index) {
+  viewerPhotos = photos;
+  viewerIndex = index;
+  renderPhotoViewer();
   document.getElementById('photo-viewer').classList.add('show');
+}
+
+function renderPhotoViewer() {
+  const img = document.getElementById('photo-viewer-img');
+  if (!viewerPhotos.length) return;
+
+  img.src = viewerPhotos[viewerIndex].img;
+  img.alt = viewerPhotos[viewerIndex].title || "";
+}
+
+function showNextPhoto() {
+  if (!viewerPhotos.length) return;
+  if (viewerIndex < viewerPhotos.length - 1) {
+    viewerIndex++;
+    renderPhotoViewer();
+  }
+}
+
+function showPrevPhoto() {
+  if (!viewerPhotos.length) return;
+  if (viewerIndex > 0) {
+    viewerIndex--;
+    renderPhotoViewer();
+  }
 }
 
 function closePhotoViewer() {
   document.getElementById('photo-viewer').classList.remove('show');
   document.getElementById('photo-viewer-img').src = "";
   document.getElementById('photo-viewer-img').alt = "";
+  viewerPhotos = [];
+  viewerIndex = 0;
 }
 
 document.getElementById('photo-viewer').addEventListener('click', function (e) {
@@ -527,7 +569,6 @@ function changeVisit(markerId, direction) {
   const newHtml = createRepeatPopup(item.place, item.visits, markerId);
   openOverlay(newHtml);
 }
-
 
 /* 🌿 11. 建立 markers */
 data.forEach((item, idx) => {
@@ -567,6 +608,28 @@ data.forEach((item, idx) => {
     });
   }
 });
+  let touchStartX = 0;
+let touchEndX = 0;
+
+const viewerCard = document.getElementById('photo-viewer-card');
+
+viewerCard.addEventListener('touchstart', function (e) {
+  touchStartX = e.changedTouches[0].clientX;
+}, { passive: true });
+
+viewerCard.addEventListener('touchend', function (e) {
+  touchEndX = e.changedTouches[0].clientX;
+
+  const diff = touchEndX - touchStartX;
+
+  if (Math.abs(diff) < 40) return;
+
+  if (diff < 0) {
+    showNextPhoto();
+  } else {
+    showPrevPhoto();
+  }
+}, { passive: true });
 
 </script>
 
