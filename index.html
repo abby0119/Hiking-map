@@ -7,7 +7,7 @@
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-  <style>
+ <style>
   body { margin:0; padding:0; }
   #map { width:100%; height:100vh; }
 
@@ -31,43 +31,6 @@
     border-radius: 10px;
   }
 
-  .visit-scroll {
-    display: flex;
-    width: 100%;
-    flex: 1;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-    box-sizing: border-box;
-    touch-action: pan-x;
-  }
-
-  .visit-scroll::-webkit-scrollbar {
-    display: none;
-  }
-
-  .visit-page {
-    flex: 0 0 100%;
-    width: 100%;
-    min-width: 100%;
-    max-width: 100%;
-    height: 100%;
-    scroll-snap-align: start;
-    box-sizing: border-box;
-    overflow: hidden;
-  }
-
-  .visit-page-inner {
-    height: 100%;
-    overflow-y: auto;
-    box-sizing: border-box;
-    padding-right: 2px;
-    padding-bottom: 20px;
-    -webkit-overflow-scrolling: touch;
-  }
-
   .visit-nav {
     display: flex;
     justify-content: center;
@@ -81,8 +44,8 @@
     border: none;
     background: #f3f3f3;
     border-radius: 999px;
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     font-size: 18px;
     cursor: pointer;
     line-height: 1;
@@ -95,7 +58,7 @@
   .visit-indicator {
     font-size: 12px;
     color: #666;
-    min-width: 72px;
+    min-width: 76px;
     text-align: center;
   }
 </style>
@@ -184,7 +147,7 @@ const data = [
       { img: "photo3a.jpg", title: "杜英落葉" },
       { img: "photo3b.jpg", title: "不怕人的樹鵲" }
     ],
-    "今天昱安感冒，我還是自己爬山，撿了紅色杜英落葉，希望寶貝能快快好起來",
+    "昱安當兵時常常感冒，還是自己爬山，撿了紅色杜英落葉，希望可憐生病人能快快好起來",
     "alone"
   ],
 
@@ -201,7 +164,7 @@ const data = [
     [
       {
         date: "2025.09.20",
-        route: "萬溪產道支線頂山站>荷蘭古道>北五指山草原",
+        route: "萬溪產道頂山站>荷蘭古道>北五指山草原",
         photos: [
           { img: "photo4.jpg", title: "八角蓮長出第二片葉子" },
           { img: "photo4a.jpg", title: "仰望墨點櫻桃" },
@@ -214,7 +177,7 @@ const data = [
       },
       {
         date: "2025.10.05",
-        route: "萬溪產道支線頂山站>荷蘭古道>北五指山草原",
+        route: "萬溪產道頂山站>荷蘭古道>北五指山草原",
         photos: [
           { img: "photo4.jpg", title: "第二次又來看八角蓮" },
           { img: "photo4d.jpg", title: "這次天氣更藍" }
@@ -229,7 +192,7 @@ const data = [
     24.459073127542787,
     121.26030452897538,
     "大霸尖山",
-    "Day0觀霧山莊>Day2大鹿林道>九九山莊>Day3大霸尖山>Day4下山",
+    "Day0觀霧山莊>Day1大鹿林道>九九山莊>Day2大霸尖山>Day3下山",
     [
       { img: "photo5.jpg", title: "雙鋸齒玄參" },
       { img: "photo5a.jpg", title: "小木通" },
@@ -245,7 +208,11 @@ const data = [
 ];
 
 
-/* 🌿 5. 共用照片區 HTML */
+/* 🌿 5. repeat 點目前第幾頁 */
+const repeatState = {};
+
+
+/* 🌿 6. 共用照片區 HTML */
 function createPhotoHTML(photos, imgHeight = 260) {
   return `
     <div class="photo-scroll">
@@ -290,7 +257,7 @@ function createPhotoHTML(photos, imgHeight = 260) {
 }
 
 
-/* 🌿 6. 單次 popup */
+/* 🌿 7. 單次 popup */
 function createSinglePopup(date, place, route, photos, note) {
   return `
     <div style="
@@ -332,8 +299,14 @@ function createSinglePopup(date, place, route, photos, note) {
 }
 
 
-/* 🌿 7. 多次 visit popup */
-function createRepeatPopup(place, visits, popupId) {
+/* 🌿 8. repeat popup：只顯示目前這一頁 */
+function createRepeatPopup(place, visits, markerId) {
+  let currentIndex = repeatState[markerId] || 0;
+  if (currentIndex < 0) currentIndex = 0;
+  if (currentIndex > visits.length - 1) currentIndex = visits.length - 1;
+
+  const visit = visits[currentIndex];
+
   return `
     <div style="
       width:260px;
@@ -341,126 +314,84 @@ function createRepeatPopup(place, visits, popupId) {
       font-family:sans-serif;
       display:flex;
       flex-direction:column;
-      box-sizing:border-box;
+      overflow-y:auto;
       padding:4px 2px;
-      overflow:hidden;
+      box-sizing:border-box;
     ">
-
       <div class="visit-nav">
-        <button class="visit-btn" onclick="scrollVisit('${popupId}', -1)">‹</button>
-        <div id="visit-indicator-${popupId}" class="visit-indicator">第 1 / ${visits.length} 次</div>
-        <button class="visit-btn" onclick="scrollVisit('${popupId}', 1)">›</button>
+        <button class="visit-btn" onclick="changeVisit('${markerId}', -1)">‹</button>
+        <div class="visit-indicator">第 ${currentIndex + 1} / ${visits.length} 次</div>
+        <button class="visit-btn" onclick="changeVisit('${markerId}', 1)">›</button>
       </div>
 
-      <div id="visit-scroll-${popupId}" class="visit-scroll" data-current-index="0">
-        ${visits.map(visit => `
-          <div class="visit-page">
-            <div class="visit-page-inner">
-              <div style="font-size:16px;">
-                🌿 <b>${visit.date}</b><br><br>
-              </div>
+      <div style="font-size:16px;">
+        🌿 <b>${visit.date}</b><br><br>
+      </div>
 
-              <div style="display:flex; align-items:center; gap:4px; font-size:16px;">
-                <span>📍</span>
-                <b>${place}</b>
-              </div>
+      <div style="display:flex; align-items:center; gap:4px; font-size:16px;">
+        <span>📍</span>
+        <b>${place}</b>
+      </div>
 
-              <div style="font-size:14px;">
-                ${visit.route}
-                <br><br>
-              </div>
+      <div style="font-size:14px;">
+        ${visit.route}
+        <br><br>
+      </div>
 
-              ${createPhotoHTML(visit.photos, 220)}
+      ${createPhotoHTML(visit.photos, 220)}
 
-              <div style="
-                font-size:14px;
-                line-height:1.5;
-                margin-top:10px;
-                padding-bottom:8px;
-              ">
-                ${visit.note}
-              </div>
-            </div>
-          </div>
-        `).join("")}
+      <div style="
+        font-size:14px;
+        line-height:1.5;
+        margin-top:10px;
+        padding-bottom:8px;
+      ">
+        ${visit.note}
       </div>
     </div>
   `;
 }
 
 
-/* 🌿 8. 箭頭控制 */
-function scrollVisit(popupId, direction) {
-  const scroller = document.getElementById(`visit-scroll-${popupId}`);
-  const indicator = document.getElementById(`visit-indicator-${popupId}`);
-  if (!scroller) return;
+/* 🌿 9. 儲存 repeat marker 資訊 */
+const repeatMarkers = {};
 
-  const total = scroller.children.length;
-  let index = parseInt(scroller.dataset.currentIndex || "0", 10);
 
-  index += direction;
-  if (index < 0) index = 0;
-  if (index > total - 1) index = total - 1;
+/* 🌿 10. 箭頭翻頁 */
+function changeVisit(markerId, direction) {
+  const item = repeatMarkers[markerId];
+  if (!item) return;
 
-  const pageWidth = scroller.clientWidth;
+  const total = item.visits.length;
+  let currentIndex = repeatState[markerId] || 0;
 
-  scroller.scrollTo({
-    left: index * pageWidth,
-    behavior: "smooth"
-  });
+  currentIndex += direction;
 
-  scroller.dataset.currentIndex = index;
+  if (currentIndex < 0) currentIndex = 0;
+  if (currentIndex > total - 1) currentIndex = total - 1;
 
-  const targetPage = scroller.children[index];
-  if (targetPage) {
-    const inner = targetPage.querySelector('.visit-page-inner');
-    if (inner) inner.scrollTop = 0;
-  }
+  repeatState[markerId] = currentIndex;
 
-  if (indicator) {
-    indicator.textContent = `第 ${index + 1} / ${total} 次`;
-  }
+  const newHtml = createRepeatPopup(item.place, item.visits, markerId);
+  item.marker.setPopupContent(newHtml);
+  item.marker.openPopup();
 }
 
 
-/* 🌿 9. popup 互動 */
+/* 🌿 11. popup 互動 */
 function bindPopupInteractions(marker, map) {
   marker.on('popupopen', function (e) {
     const container = e.popup.getElement();
     const photoScrollers = container.querySelectorAll('.photo-scroll');
-    const visitScroller = container.querySelector('.visit-scroll');
 
     photoScrollers.forEach(scroller => {
       L.DomEvent.disableClickPropagation(scroller);
+      L.DomEvent.disableScrollPropagation(scroller);
 
       scroller.addEventListener('wheel', function (ev) {
         ev.stopPropagation();
       });
     });
-
-    if (visitScroller) {
-      L.DomEvent.disableClickPropagation(visitScroller);
-
-      visitScroller.addEventListener('wheel', function (ev) {
-        ev.stopPropagation();
-      });
-
-      const indicator = container.querySelector('.visit-indicator');
-
-      visitScroller.addEventListener('scroll', function () {
-        const pageWidth = visitScroller.clientWidth;
-        if (!pageWidth) return;
-
-        const index = Math.round(visitScroller.scrollLeft / pageWidth);
-        const total = visitScroller.children.length;
-
-        visitScroller.dataset.currentIndex = index;
-
-        if (indicator) {
-          indicator.textContent = `第 ${index + 1} / ${total} 次`;
-        }
-      });
-    }
 
     setTimeout(() => {
       const latlng = e.popup._latlng;
@@ -476,9 +407,8 @@ function bindPopupInteractions(marker, map) {
 }
 
 
-/* 🌿 10. 建立 markers */
+/* 🌿 12. 建立 markers */
 data.forEach((item, idx) => {
-
   let [
     date, lat, lng,
     place, route,
@@ -493,12 +423,18 @@ data.forEach((item, idx) => {
     icon: createPinIcon(color)
   }).addTo(map);
 
-  const popupId = `popup-${idx}`;
+  const markerId = `marker-${idx}`;
 
   let popupHTML = "";
 
   if (status === "repeat" && Array.isArray(visits) && visits.length > 0) {
-    popupHTML = createRepeatPopup(place, visits, popupId);
+    repeatState[markerId] = 0;
+    repeatMarkers[markerId] = {
+      marker: marker,
+      place: place,
+      visits: visits
+    };
+    popupHTML = createRepeatPopup(place, visits, markerId);
   } else {
     popupHTML = createSinglePopup(date, place, route, photos, note);
   }
