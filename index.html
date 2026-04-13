@@ -143,7 +143,7 @@
   position: relative;
   width: min(320px, calc(100vw - 24px));
   max-height: 82vh;
-  background: #fff;
+  background: #000;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.22);
   overflow: hidden;
@@ -155,7 +155,7 @@
   height: auto;
   max-height: 82vh;
   object-fit: contain;
-  background: #fff;
+  background: #000;
 }
   </style>
 </head>
@@ -540,6 +540,21 @@ function closePhotoViewer() {
   viewerPhotos = [];
   viewerIndex = 0;
 }
+
+document.addEventListener('keydown', function (e) {
+  const viewer = document.getElementById('photo-viewer');
+
+  // 只有在大圖 viewer 打開時才作用
+  if (!viewer.classList.contains('show')) return;
+
+  if (e.key === 'ArrowRight') {
+    showNextPhoto();
+  } else if (e.key === 'ArrowLeft') {
+    showPrevPhoto();
+  } else if (e.key === 'Escape') {
+    closePhotoViewer();
+  }
+});
 
 document.getElementById('photo-viewer').addEventListener('click', function (e) {
   if (e.target.id === 'photo-viewer') {
