@@ -410,6 +410,25 @@ function bindPopupInteractions(marker, map) {
         ev.stopPropagation();
       });
     });
+
+    // 讓 marker 在手機上更接近畫面中間
+    setTimeout(() => {
+      const point = map.latLngToContainerPoint(marker.getLatLng());
+      const mapSize = map.getSize();
+
+      const targetX = mapSize.x / 2;
+      const targetY = mapSize.y / 2 + 60; 
+      // +60 代表 marker 稍微放在畫面中間偏下，
+      // 這樣上方 popup 比較容易完整顯示
+
+      const dx = point.x - targetX;
+      const dy = point.y - targetY;
+
+      map.panBy([dx, dy], {
+        animate: true,
+        duration: 0.4
+      });
+    }, 80);
   });
 }
 
