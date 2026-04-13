@@ -308,7 +308,7 @@ function createRepeatPopup(place, visits, markerId) {
   const visit = visits[currentIndex];
 
   return `
-    <div style="
+    <div class="repeat-popup-root" style="
       width:260px;
       height:560px;
       font-family:sans-serif;
@@ -318,7 +318,6 @@ function createRepeatPopup(place, visits, markerId) {
       padding:4px 2px;
       box-sizing:border-box;
     ">
-
       <div style="font-size:16px;">
         🌿 <b>${visit.date}</b><br><br>
       </div>
@@ -344,10 +343,10 @@ function createRepeatPopup(place, visits, markerId) {
         ${visit.note}
       </div>
 
-      <div class="visit-nav">
-        <button class="visit-btn" onclick="changeVisit('${markerId}', -1)">‹</button>
+      <div class="visit-nav" style="margin-top:12px; padding-bottom:6px;">
+        <button type="button" class="visit-btn visit-arrow" data-marker-id="${markerId}" data-direction="-1">‹</button>
         <div class="visit-indicator">第 ${currentIndex + 1} / ${visits.length} 次</div>
-        <button class="visit-btn" onclick="changeVisit('${markerId}', 1)">›</button>
+        <button type="button" class="visit-btn visit-arrow" data-marker-id="${markerId}" data-direction="1">›</button>
       </div>
     </div>
   `;
@@ -384,6 +383,11 @@ function bindPopupInteractions(marker, map) {
   marker.on('popupopen', function (e) {
     const container = e.popup.getElement();
     const photoScrollers = container.querySelectorAll('.photo-scroll');
+    const arrowButtons = container.querySelectorAll('.visit-arrow');
+
+    // 整個 popup 內容都不要把點擊傳到地圖
+    L.DomEvent.disableClickPropagation(container);
+    L.DomEvent.disableScrollPropagation(container);
 
     photoScrollers.forEach(scroller => {
       L.DomEvent.disableClickPropagation(scroller);
@@ -394,10 +398,20 @@ function bindPopupInteractions(marker, map) {
       });
     });
 
+    arrowButtons.forEach(btn => {
+      L.DomEvent.on(btn, 'click', function (ev) {
+        L.DomEvent.stop(ev);
+
+        const markerId = btn.dataset.markerId;
+        const direction = parseInt(btn.dataset.direction, 10);
+        changeVisit(markerId, direction);
+      });
+    });
+
     setTimeout(() => {
       const latlng = e.popup._latlng;
       const px = map.project(latlng);
-      px.y -= e.popup._container.clientHeight / 2;
+      px.y -= e.popup._container.clientHeight / 3;
 
       map.panTo(map.unproject(px), {
         animate: true,
