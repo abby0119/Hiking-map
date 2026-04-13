@@ -395,8 +395,7 @@ function bindPopupInteractions(marker, map) {
   marker.on('popupopen', function (e) {
     const container = e.popup.getElement();
     const photoScrollers = container.querySelectorAll('.photo-scroll');
-  
-    // 整個 popup 內容都不要把點擊傳到地圖
+
     L.DomEvent.disableClickPropagation(container);
     L.DomEvent.disableScrollPropagation(container);
 
@@ -406,13 +405,6 @@ function bindPopupInteractions(marker, map) {
 
       scroller.addEventListener('wheel', function (ev) {
         ev.stopPropagation();
-      });
-    });
-
-
-        const markerId = btn.dataset.markerId;
-        const direction = parseInt(btn.dataset.direction, 10);
-        changeVisit(markerId, direction);
       });
     });
 
