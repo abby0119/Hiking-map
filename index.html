@@ -80,17 +80,17 @@
     }
 
     .overlay-card {
-      position: relative;
-      width: min(280px, calc(100vw - 32px));
-      max-height: 82vh;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.22);
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding: 10px 10px 12px;
-      box-sizing: border-box;
-    }
+  position: relative;
+  width: min(320px, calc(100vw - 24px));
+  max-height: 82vh;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.22);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 10px 12px; /* ← 上面變 0 */
+  box-sizing: border-box;
+}
 
     .overlay-close {
       position: sticky;
@@ -119,6 +119,7 @@
     }
 
     .overlay-body {
+      padding: 10px 4px 0;
       font-family: sans-serif;
     }
   </style>
@@ -131,11 +132,8 @@
 <!-- overlay -->
 <div id="overlay">
   <div class="overlay-card" id="overlay-card">
-    <div class="overlay-close">
-      <button type="button" onclick="closeOverlay()">×</button>
-    </div>
-    <div class="overlay-body" id="overlay-content"></div>
-  </div>
+  <div class="overlay-body" id="overlay-content"></div>
+</div>
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
