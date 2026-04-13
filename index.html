@@ -249,9 +249,13 @@ data.forEach(item => {
     ${note}
 
   </div>
-`, {
-  autoPan: false   // ⭐ 防止地圖干擾滑動
-});
+`, 
+{
+  autoPan: false,
+  maxWidth: 320,
+  minWidth: 260
+}
+);
 
 marker.on('popupopen', function (e) {
     const container = e.popup.getElement();
