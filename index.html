@@ -411,24 +411,41 @@ function bindPopupInteractions(marker, map) {
       });
     });
 
-    // 讓 marker 在手機上更接近畫面中間
-    setTimeout(() => {
-      const point = map.latLngToContainerPoint(marker.getLatLng());
+    function centerPopup() {
+      const popupEl = e.popup._container;
+      if (!popupEl) return;
+
+      const latlng = e.popup._latlng;
+      const px = map.project(latlng);
+
+      // 水平維持 marker 在畫面中央
+      const point = map.latLngToContainerPoint(latlng);
       const mapSize = map.getSize();
+      const dx = point.x - mapSize.x / 2;
 
-      const targetX = mapSize.x / 2;
-      const targetY = mapSize.y / 2 + 100; 
-      // +60 代表 marker 稍微放在畫面中間偏下，
-      // 這樣上方 popup 比較容易完整顯示
+      // 垂直用 popup 高度去推，這是你舊版會順的關鍵
+      const dy = popupEl.clientHeight / 2;
 
-      const dx = point.x - targetX;
-      const dy = point.y - targetY;
+      const targetPx = L.point(px.x - dx, px.y - dy);
 
-      map.panBy([dx, dy], {
+      map.panTo(map.unproject(targetPx), {
         animate: true,
-        duration: 0.4
+        duration: 0.5
       });
-    }, 80);
+    }
+
+    // 先置中一次
+    setTimeout(centerPopup, 80);
+
+    // 圖片載入完再置中一次
+    const imgs = container.querySelectorAll('img');
+    imgs.forEach(img => {
+      if (!img.complete) {
+        img.addEventListener('load', () => {
+          setTimeout(centerPopup, 30);
+        }, { once: true });
+      }
+    });
   });
 }
 
@@ -465,11 +482,9 @@ data.forEach((item, idx) => {
   }
 
   marker.bindPopup(popupHTML, {
-    autoPan: true,
-    keepInView: true,
-    maxWidth: 240,
-    minWidth: 200,
-    offset: [0, -8]
+    autoPan: false,
+    maxWidth: 260,
+    minWidth: 220
   });
 
   bindPopupInteractions(marker, map);
