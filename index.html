@@ -262,7 +262,7 @@ function createSinglePopup(date, place, route, photos, note) {
   return `
     <div style="
       width:260px;
-      height:465px;
+      height:560px;
       font-family:sans-serif;
       display:flex;
       flex-direction:column;
@@ -310,7 +310,7 @@ function createRepeatPopup(place, visits, markerId) {
   return `
     <div style="
       width:260px;
-      height:465px;
+      height:560px;
       font-family:sans-serif;
       display:flex;
       flex-direction:column;
@@ -318,11 +318,6 @@ function createRepeatPopup(place, visits, markerId) {
       padding:4px 2px;
       box-sizing:border-box;
     ">
-      <div class="visit-nav">
-        <button class="visit-btn" onclick="changeVisit('${markerId}', -1)">‹</button>
-        <div class="visit-indicator">第 ${currentIndex + 1} / ${visits.length} 次</div>
-        <button class="visit-btn" onclick="changeVisit('${markerId}', 1)">›</button>
-      </div>
 
       <div style="font-size:16px;">
         🌿 <b>${visit.date}</b><br><br>
@@ -347,6 +342,12 @@ function createRepeatPopup(place, visits, markerId) {
         padding-bottom:8px;
       ">
         ${visit.note}
+      </div>
+
+      <div class="visit-nav">
+        <button class="visit-btn" onclick="changeVisit('${markerId}', -1)">‹</button>
+        <div class="visit-indicator">第 ${currentIndex + 1} / ${visits.length} 次</div>
+        <button class="visit-btn" onclick="changeVisit('${markerId}', 1)">›</button>
       </div>
     </div>
   `;
