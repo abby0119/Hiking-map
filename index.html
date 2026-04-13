@@ -424,18 +424,17 @@ function bindPopupInteractions(marker, map) {
       const dx = point.x - mapSize.x / 2;
 
       // 垂直用 popup 高度去推，這是你舊版會順的關鍵
-      const dy = popupEl.clientHeight / 2;
+      const dy = popupEl.clientHeight / 2-80;
 
       const targetPx = L.point(px.x - dx, px.y - dy);
 
       map.panTo(map.unproject(targetPx), {
-        animate: true,
-        duration: 0.5
+        animate: false,
       });
     }
 
     // 先置中一次
-    setTimeout(centerPopup, 80);
+    setTimeout(centerPopup, 20);
 
     // 圖片載入完再置中一次
     const imgs = container.querySelectorAll('img');
