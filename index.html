@@ -412,20 +412,24 @@ function bindPopupInteractions(marker, map) {
     });
 
     function centerPopup() {
-      const popupEl = e.popup._container;
-      if (!popupEl) return;
+  const popupEl = e.popup._container;
+  if (!popupEl) return;
 
-      const latlng = e.popup._latlng;
-      const point = map.latLngToContainerPoint(latlng);
-      const mapSize = map.getSize();
+  const latlng = e.popup._latlng;
+  const px = map.project(latlng);
 
-      const dx = point.x - mapSize.x / 2;
-      const dy = point.y - (mapSize.y / 2 + (popupEl.clientHeight / 2 - 80));
+  const point = map.latLngToContainerPoint(latlng);
+  const mapSize = map.getSize();
+  const dx = point.x - mapSize.x / 2 - 20;
 
-      map.panBy([dx, dy], {
-        animate: false
-      });
-    }
+  const dy = popupEl.clientHeight / 2 - 80;
+
+  const targetPx = L.point(px.x - dx, px.y - dy);
+
+  map.panTo(map.unproject(targetPx), {
+    animate: false
+  });
+}
 
     setTimeout(centerPopup, 20);
 
