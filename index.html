@@ -418,30 +418,27 @@ function bindPopupInteractions(marker, map) {
       const latlng = e.popup._latlng;
       const px = map.project(latlng);
 
-      // 水平維持 marker 在畫面中央
       const point = map.latLngToContainerPoint(latlng);
       const mapSize = map.getSize();
       const dx = point.x - mapSize.x / 2;
 
-      // 垂直用 popup 高度去推，這是你舊版會順的關鍵
-      const dy = popupEl.clientHeight / 2-80;
+      // 原本太高，少推一點
+      const dy = popupEl.clientHeight / 2 - 80;
 
       const targetPx = L.point(px.x - dx, px.y - dy);
 
       map.panTo(map.unproject(targetPx), {
-        animate: false,
+        animate: false
       });
     }
 
-    // 先置中一次
     setTimeout(centerPopup, 20);
 
-    // 圖片載入完再置中一次
     const imgs = container.querySelectorAll('img');
     imgs.forEach(img => {
       if (!img.complete) {
         img.addEventListener('load', () => {
-          setTimeout(centerPopup, 30);
+          setTimeout(centerPopup, 20);
         }, { once: true });
       }
     });
