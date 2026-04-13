@@ -123,38 +123,25 @@
       font-family: sans-serif;
     }
 
-    #photo-viewer {
+#photo-viewer {
   position: fixed;
   inset: 0;
   display: none;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.45);
+  background: #000; /* 整個畫面黑色 */
   z-index: 10000;
-  padding: 16px;
-  box-sizing: border-box;
 }
 
 #photo-viewer.show {
   display: flex;
 }
 
-.photo-viewer-card {
-  position: relative;
-  width: min(320px, calc(100vw - 24px));
-  max-height: 82vh;
-  background: #000;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.22);
-  overflow: hidden;
-}
-
 #photo-viewer-img {
   display: block;
   width: 100%;
-  height: auto;
-  max-height: 82vh;
-  object-fit: contain;
+  height: 100%;
+  object-fit: contain; /* 保持完整圖片 */
   background: #000;
 }
   </style>
@@ -172,9 +159,7 @@
 </div>
 
 <div id="photo-viewer">
-  <div class="photo-viewer-card" id="photo-viewer-card">
-    <img id="photo-viewer-img" src="" alt="">
-  </div>
+  <img id="photo-viewer-img" src="">
 </div>
   
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -626,7 +611,7 @@ data.forEach((item, idx) => {
   let touchStartX = 0;
 let touchEndX = 0;
 
-const viewerCard = document.getElementById('photo-viewer-card');
+const viewerCard = document.getElementById('photo-viewer');
 
 viewerCard.addEventListener('touchstart', function (e) {
   touchStartX = e.changedTouches[0].clientX;
