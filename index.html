@@ -626,6 +626,17 @@ viewerCard.addEventListener('touchend', function (e) {
   }
 }, { passive: true });
 
+document.addEventListener('wheel', function (e) {
+  const scroller = e.target.closest('.photo-scroll');
+  if (!scroller) return;
+
+  // 如果主要是垂直滾動，就把它轉成水平滾動
+  if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+    e.preventDefault();
+    scroller.scrollLeft += e.deltaY;
+  }
+}, { passive: false });
+
 </script>
 
 </body>
