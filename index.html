@@ -95,8 +95,8 @@
     @media (min-width: 768px) {
   .overlay-card {
     width: min(460px, calc(100vw - 64px));
-    min-height: 80vh;
-    max-height: 94vh;
+    min-height: 60vh;
+    max-height: 88vh;
 
     display: flex;
     flex-direction: column;
@@ -105,6 +105,10 @@
   .overlay-body {
     flex: 1;
   }
+  @media (min-width: 768px) {
+  .photo-scroll img {
+    height: 300px !important;
+  }    
 }
     
     .overlay-close {
