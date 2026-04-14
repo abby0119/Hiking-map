@@ -79,46 +79,56 @@
       display: flex;
     }
 
-    .overlay-card {
+   .overlay-card {
   position: relative;
-  width: min(320px, calc(100vw - 24px));
-  max-height: 82vh;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(88vh, 760px);
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.22);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 10px 12px; /* ← 上面變 0 */
+  padding: 0 16px 14px;
   box-sizing: border-box;
 }
 
- @media (min-width: 768px) and (max-width: 1024px) {
+@media (max-width: 767px) {
   .overlay-card {
-    width: min(460px, calc(100vw - 64px));
-    max-height: 72vh;
-  }
-
-  .photo-scroll img {
-    height: 320px !important;
+    width: min(320px, calc(100vw - 24px));
+    max-height: 82vh;
   }
 
   .overlay-body {
-    padding: 12px 10px 8px;
-  }
-}
-
-  @media (min-width: 1025px) {
-  .overlay-card {
-    width: 340px;
-    max-height: 88vh;
+    padding: 10px 6px 4px;
   }
 
   .photo-scroll img {
     height: 220px !important;
   }
+}
+
+@media (min-width: 768px) {
+  .overlay-card {
+    width: min(360px, calc(100vw - 40px));
+    max-height: min(88vh, 760px);
+  }
 
   .overlay-body {
-    padding: 10px 8px 6px;
+    padding: 12px 10px 8px;
+  }
+
+  .photo-scroll img {
+    height: clamp(220px, 32vh, 320px) !important;
+  }
+}
+
+@media (min-width: 768px) and (orientation: landscape) {
+  .overlay-card {
+    max-height: 84vh;
+  }
+
+  .photo-scroll img {
+    height: clamp(200px, 28vh, 280px) !important;
   }
 }
     
