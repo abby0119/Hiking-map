@@ -16,7 +16,7 @@
       align-items: flex-start;
       overflow-x: auto;
       gap: 8px;
-      padding-bottom: 6px;
+      padding-bottom: 8px;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -88,10 +88,11 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.22);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 0 12px 14px;
+  padding: 0;
   box-sizing: border-box;
 }
 
+/* 📱 手機(直) */
 @media (max-width: 767px) {
   .overlay-card {
     width: min(320px, calc(100vw - 24px));
@@ -99,7 +100,7 @@
   }
 
   .overlay-body {
-    padding: 10px 6px 4px;
+    padding: 14px 10px 14px;
   }
 
   .photo-scroll img {
@@ -107,14 +108,15 @@
   }
 }
 
-@media (min-width: 768px) {
+/* 💻 平板以上 */
+@media (min-width: 767px) {
   .overlay-card {
     width: min(360px, calc(100vw - 40px));
     max-height: min(88vh, 760px);
   }
 
   .overlay-body {
-    padding: 12px 10px 8px;
+    padding: 14px 10px 14px;
   }
 
   .photo-scroll img {
@@ -122,6 +124,7 @@
   }
 }
 
+/* 🔄 橫向（平板橫放 / 電腦） */
 @media (min-width: 768px) and (orientation: landscape) {
   .overlay-card {
     max-height: 84vh;
@@ -159,7 +162,7 @@
     }
 
     .overlay-body {
-      padding: 10px 6px 4px;
+      padding: 14px 10px 14px;
       font-family: sans-serif;
     }
 
@@ -184,12 +187,89 @@
   object-fit: contain; /* 保持完整圖片 */
   background: #000;
 }
+
+#timeline-wrap {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 9998;
+
+  width: min(700px, calc(100vw - 80px));
+
+  display: flex;              
+  flex-direction: column;     
+  align-items: center;       
+
+  background: transparent;   
+  padding: 0;               
+  box-shadow: none;         
+}
+
+#timeline-label {
+  border: none;
+  background: rgba(255,255,255,0.15);   /* 半透明白泡泡 */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  color: #ffffff;
+  font-size: 13px;
+  font-family: sans-serif;
+  text-align: center;
+
+  padding: 6px 12px;
+  border-radius: 999px;
+  margin-bottom: 8px;
+
+  cursor: pointer;
+  box-shadow: none;
+}
+
+#timeline-label:hover {
+  background: rgba(255,255,255,0.6);
+}
+
+#timeline-label:active {
+  transform: scale(0.98);
+}
+
+#timeline-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  margin: 0;
+
+  height: 3px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 999px;
+  outline: none;
+}
+
+/* ⭐ 這段才是滑塊 */
+#timeline-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
   </style>
 </head>
 
 <body>
 
 <div id="map"></div>
+
+<div id="timeline-wrap">
+  <button id="timeline-label" type="button"></button>
+  <input type="range" id="timeline-slider" min="0" max="0" value="0" step="1">
+</div>
 
 <!-- overlay -->
 <div id="overlay">
@@ -209,7 +289,7 @@
 /* 🌿 1. 地圖 */
 var map = L.map('map', {
   closePopupOnClick: false
-}).setView([25.0375, 121.5637], 10);
+}).setView([23.8, 121], 7.5);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
@@ -377,7 +457,7 @@ const data = [
       { img: "p1141010-3.jpg", title: "喜歡這張" },
       { img: "p1141010-4.jpg", title: "盛開中" },
       { img: "p1141010-5.jpg", title: "小心翼翼靠近陡峭山壁旁的臺灣糯米條" },
-      { img: "p1141010-6.jpg", title: "宿存花萼，這裡的植株葉被粗毛" },
+      { img: "p1141010-6.jpg", title: "宿存花萼，這裡的葉片被粗毛" },
       { img: "p1141010-7.jpg", title: "高草叢中穿梭" },
       { img: "p1141010-8.jpg", title: "閃閃發光" },
       { img: "p1141010-9.jpg", title: "臺灣牛皮消" },
@@ -389,7 +469,7 @@ const data = [
   ],
 
 [
-    "2025.10.24~26",
+    "2025.10.24-26",
     24.88770962829829, 
     121.78935375882655,
     "鶯子嶺",
@@ -422,7 +502,7 @@ const data = [
       { img: "p1141101-3.jpg", title: "手指手槍又出現了" },
       { img: "p1141101-4.jpg", title: "拍到不耐煩人" }
     ],
-    "可憐的寶貝人還在感冒，全程戴口罩而且不讓我回永和住",
+    "可憐的寶貝人還在感冒，全程戴口罩也不讓我去永和住",
     "together"
   ],
 
@@ -446,14 +526,14 @@ const data = [
       { img: "p1141108-11.jpg", title: "還好有走到內鳥嘴山" },
       { img: "p1141108-12.jpg", title: "和山毛櫸合照" },
       { img: "p1141108-13.jpg", title: "美麗的樹根" },
-      { img: "p1141108-14.jpg", title: "我們都很喜歡的假繡球，希望能看到如積雪一般的花" },
+      { img: "p1141108-14.jpg", title: "我們都很喜歡的假繡球，希望能看到如積雪般的花" },
       { img: "p1141108-15.jpg", title: "下午開始起霧了" },
-      { img: "p1141108-16.jpg", title: "很幸運地看到樹林間的光束" },
+      { img: "p1141108-16.jpg", title: "幸運地看到樹林間的光束" },
       { img: "p1141108-17.jpg", title: "快樂爬山" },
       { img: "p1141108-18.jpg", title: "返回登山口，寶貝看起來容光煥發，我看起來累爆了..." },
       { img: "p1141115-1.jpg", title: "撿回來的橡實放在窗台，很耐看" }
     ],
-    "寶貝第一次爬中級山，還去看了我一直想看的臺灣山毛櫸(願望清單-1)，好開心，今天睡得很少但體力還不錯，喜歡和寶貝一起爬山",
+    "寶貝人第一次爬中級山，還去看了我一直想看的臺灣山毛櫸(願望清單-1)，好開心，今天睡得很少但體力還不錯，喜歡一起爬山",
     "together"
   ]
 ];
@@ -463,8 +543,22 @@ const data = [
 const repeatState = {};
 const repeatMarkers = {};
 
+let markers = [];
+let timelineDates = [];
+let currentTimelineMarker = null;
 
 /* 🌿 6. 共用照片區 HTML */
+function normalizeDate(dateStr) {
+  if (!dateStr) return null;
+
+  let s = dateStr.replace("~", "-");
+
+  const match = s.match(/^(\d{4})\.(\d{2})\.(\d{2})/);
+  if (!match) return null;
+
+  return `${match[1]}-${match[2]}-${match[3]}`;
+}
+
 function createPhotoHTML(photos, imgHeight = 220) {
   const photosJson = encodeURIComponent(JSON.stringify(photos));
 
@@ -592,8 +686,7 @@ function createRepeatPopup(place, visits, markerId) {
     <div style="
       font-size:14px;
       line-height:1.5;
-      margin-top:10px;
-      padding-bottom:8px;
+      margin-top:12px;
     ">
       ${visit.note}
     </div>
@@ -715,6 +808,7 @@ function changeVisit(markerId, direction) {
 }
 
 /* 🌿 11. 建立 markers */
+/* 🌿 11. 建立 markers */
 data.forEach((item, idx) => {
   let [
     date, lat, lng,
@@ -726,12 +820,30 @@ data.forEach((item, idx) => {
 
   let color = iconColor[status] || "#64b5f6";
 
+  // ❗不要 addTo(map)
   let marker = L.marker([lat, lng], {
     icon: createPinIcon(color)
-  }).addTo(map);
+  });
 
+  // ✅ 只留這一個 markerId
   const markerId = `marker-${idx}`;
 
+  // 🌿 時間軸用
+  let markerDate = null;
+
+  if (status === "repeat" && Array.isArray(visits) && visits.length > 0) {
+    markerDate = normalizeDate(visits[0].date);
+  } else {
+    markerDate = normalizeDate(date);
+  }
+
+  marker.timelineDate = markerDate;
+  marker.rawDate = status === "repeat" && visits?.length ? visits[0].date : date;
+
+  markers.push(marker);
+  if (markerDate) timelineDates.push(markerDate);
+
+  // 🌿 原本功能（不要動）
   if (status === "repeat" && Array.isArray(visits) && visits.length > 0) {
     repeatState[markerId] = 0;
     repeatMarkers[markerId] = {
@@ -752,6 +864,58 @@ data.forEach((item, idx) => {
     });
   }
 });
+
+  
+// 👇👇👇 就貼在這裡 👇👇👇
+
+const uniqueTimelineDates = [...new Set(timelineDates)].sort();
+
+const timelineSlider = document.getElementById('timeline-slider');
+const timelineLabel = document.getElementById('timeline-label');
+
+timelineSlider.max = uniqueTimelineDates.length - 1;
+timelineSlider.value = 0;
+
+function updateTimeline(index) {
+  const currentDate = uniqueTimelineDates[index];
+  if (!currentDate) return;
+
+  const visibleMarkers = [];
+
+  markers.forEach(marker => {
+    if (marker.timelineDate <= currentDate) {
+      if (!map.hasLayer(marker)) {
+        marker.addTo(map);
+      }
+      visibleMarkers.push(marker);
+    } else {
+      if (map.hasLayer(marker)) {
+        map.removeLayer(marker);
+      }
+    }
+  });
+
+  const currentDateText = currentDate.replace(/-/g, ".");
+  timelineLabel.textContent = `Until ${currentDateText}`;
+
+  currentTimelineMarker = visibleMarkers.length
+    ? visibleMarkers[visibleMarkers.length - 1]
+    : null;
+}
+
+timelineSlider.addEventListener('input', function () {
+  updateTimeline(Number(this.value));
+});
+
+timelineLabel.addEventListener('click', function () {
+  if (!currentTimelineMarker) return;
+
+  currentTimelineMarker.fire('click');
+});
+
+// 初始
+updateTimeline(0);
+
   let touchStartX = 0;
 let touchEndX = 0;
 
