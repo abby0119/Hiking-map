@@ -185,29 +185,37 @@
 
   width: 36px;
   height: 36px;
-  min-width: 36px;
-  min-height: 36px;
   padding: 0;
 
   border: none;
   border-radius: 50%;
   background: rgba(255,255,255,0.18);
-  color: white;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 26px;
-  line-height: 1;
-  font-family: sans-serif;
-
   cursor: pointer;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-
   appearance: none;
   -webkit-appearance: none;
+}
+
+#photo-viewer-close::before,
+#photo-viewer-close::after {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 2.5px;
+  background: white;
+  border-radius: 999px;
+}
+
+#photo-viewer-close::before {
+  transform: rotate(45deg);
+}
+
+#photo-viewer-close::after {
+  transform: rotate(-45deg);
 }
 
 #photo-viewer.show {
@@ -313,7 +321,7 @@
 </div>
 
 <div id="photo-viewer">
-  <button id="photo-viewer-close" type="button">×</button>
+  <button id="photo-viewer-close" type="button" aria-label="關閉照片"></button>
   <img id="photo-viewer-img" src="">
 </div>
   
