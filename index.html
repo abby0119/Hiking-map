@@ -183,20 +183,31 @@
   left: 14px;
   z-index: 10001;
 
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0;
+
   border: none;
   border-radius: 50%;
-
   background: rgba(255,255,255,0.18);
   color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   font-size: 26px;
-  line-height: 34px;
-  text-align: center;
+  line-height: 1;
+  font-family: sans-serif;
 
   cursor: pointer;
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
+
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 #photo-viewer.show {
@@ -967,19 +978,25 @@ let isPinching = false;
 const viewerCard = document.getElementById('photo-viewer');
 
 viewerCard.addEventListener('touchstart', function (e) {
+  isPinching = e.touches.length > 1;
+
+  if (isPinching) return;
+
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+viewerCard.addEventListener('touchmove', function (e) {
   if (e.touches.length > 1) {
     isPinching = true;
-    return;
   }
-
-  isPinching = false;
-  touchStartX = e.changedTouches[0].clientX;
-  touchStartY = e.changedTouches[0].clientY;
 }, { passive: true });
 
 viewerCard.addEventListener('touchend', function (e) {
   if (isPinching) {
-    isPinching = false;
+    if (e.touches.length === 0) {
+      isPinching = false;
+    }
     return;
   }
 
@@ -989,14 +1006,12 @@ viewerCard.addEventListener('touchend', function (e) {
   const diffX = touchEndX - touchStartX;
   const diffY = touchEndY - touchStartY;
 
-  // 上滑或下滑關閉照片
   if (Math.abs(diffY) > 80 && Math.abs(diffY) > Math.abs(diffX)) {
     closePhotoViewer();
     return;
   }
 
-  // 左右滑換照片
-  if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+  if (Math.abs(diffX) > 60 && Math.abs(diffX) > Math.abs(diffY)) {
     if (diffX < 0) {
       showNextPhoto();
     } else {
@@ -1004,6 +1019,7 @@ viewerCard.addEventListener('touchend', function (e) {
     }
   }
 }, { passive: true });
+
 
 document.addEventListener('wheel', function (e) {
   const scroller = e.target.closest('.photo-scroll');
