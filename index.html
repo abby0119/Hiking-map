@@ -245,7 +245,12 @@
 
   background: transparent;   
   padding: 0;               
-  box-shadow: none;         
+  box-shadow: none;  
+
+  /* ⭐ 防止 iPad 把拖時間軸判定成滑整頁 */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #timeline-label {
@@ -1368,6 +1373,34 @@ timelineItems.sort((a, b) => a.date.localeCompare(b.date));
 const timelineSlider = document.getElementById('timeline-slider');
 const timelineLabel = document.getElementById('timeline-label');
 
+// ⭐ iPad / 手機：拖時間軸時，不要讓整個頁面或地圖跟著滑動
+['touchstart', 'touchmove'].forEach(eventName => {
+  timelineSlider.addEventListener(eventName, function (e) {
+    e.stopPropagation();
+    e.preventDefault();
+  }, { passive: false });
+});
+
+timelineSlider.addEventListener('pointerdown', function (e) {
+  e.stopPropagation();
+
+  if (timelineSlider.setPointerCapture) {
+    timelineSlider.setPointerCapture(e.pointerId);
+  }
+});
+
+timelineSlider.addEventListener('pointermove', function (e) {
+  e.stopPropagation();
+});
+
+timelineSlider.addEventListener('pointerup', function (e) {
+  e.stopPropagation();
+
+  if (timelineSlider.releasePointerCapture) {
+    timelineSlider.releasePointerCapture(e.pointerId);
+  }
+});
+  
 timelineSlider.max = timelineItems.length - 1;
 timelineSlider.value = 0;
 
