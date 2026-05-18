@@ -287,10 +287,28 @@
   width: 100%;
   margin: 0;
 
+  /* ⭐ 重點：視覺上還是細線，但手指可抓範圍變大 */
+  height: 32px;
+  background: transparent;
+  border-radius: 999px;
+  outline: none;
+
+  /* ⭐ iPad / 手機避免整頁被滑走 */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#timeline-slider::-webkit-slider-runnable-track {
   height: 3px;
   background: rgba(255,255,255,0.25);
   border-radius: 999px;
-  outline: none;
+}
+
+#timeline-slider::-moz-range-track {
+  height: 3px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 999px;
 }
 
 /* ⭐ 這段才是滑塊 */
@@ -1372,35 +1390,29 @@ timelineItems.sort((a, b) => a.date.localeCompare(b.date));
 
 const timelineSlider = document.getElementById('timeline-slider');
 const timelineLabel = document.getElementById('timeline-label');
+const timelineWrap = document.getElementById('timeline-wrap');
 
-// ⭐ iPad / 手機：拖時間軸時，不要讓整個頁面或地圖跟著滑動
-['touchstart', 'touchmove'].forEach(eventName => {
-  timelineSlider.addEventListener(eventName, function (e) {
-    e.stopPropagation();
-    e.preventDefault();
-  }, { passive: false });
-});
+// ⭐ 防止時間軸上的手勢被 Leaflet 地圖吃掉
+L.DomEvent.disableClickPropagation(timelineWrap);
+L.DomEvent.disableScrollPropagation(timelineWrap);
 
-timelineSlider.addEventListener('pointerdown', function (e) {
+// ⭐ iPad / 手機：手指碰到時間軸區域時，不要把事件傳給地圖
+timelineWrap.addEventListener('touchstart', function(e) {
   e.stopPropagation();
+}, { passive: true });
 
-  if (timelineSlider.setPointerCapture) {
-    timelineSlider.setPointerCapture(e.pointerId);
-  }
-});
+timelineWrap.addEventListener('touchmove', function(e) {
+  e.stopPropagation();
+}, { passive: true });
 
-timelineSlider.addEventListener('pointermove', function (e) {
+timelineWrap.addEventListener('pointerdown', function(e) {
   e.stopPropagation();
 });
 
-timelineSlider.addEventListener('pointerup', function (e) {
+timelineWrap.addEventListener('pointermove', function(e) {
   e.stopPropagation();
-
-  if (timelineSlider.releasePointerCapture) {
-    timelineSlider.releasePointerCapture(e.pointerId);
-  }
 });
-  
+
 timelineSlider.max = timelineItems.length - 1;
 timelineSlider.value = 0;
 
