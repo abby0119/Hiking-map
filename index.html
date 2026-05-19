@@ -328,6 +328,184 @@
   /* ⭐ 讓白色圓點對齊 3px 時間軸中央 */
   margin-top: -4.5px;
 }
+
+#place-index-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 44px;
+  z-index: 9998;
+
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  color: #333;
+  font-size: 13px;
+  font-family: sans-serif;
+  cursor: pointer;
+}
+
+#place-index-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 92px;
+  z-index: 9999;
+
+  width: min(340px, calc(100vw - 32px));
+  max-height: min(68vh, 560px);
+
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+
+  overflow: hidden;
+  display: none;
+  font-family: sans-serif;
+}
+
+#place-index-panel.show {
+  display: block;
+}
+
+.place-index-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.95);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+#place-index-close {
+  border: none;
+  background: #f1f1f1;
+  border-radius: 999px;
+  width: 28px;
+  height: 28px;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#place-index-content {
+  padding: 10px 14px 56px 24px;
+  overflow-y: auto;
+  max-height: calc(min(68vh, 560px) - 53px);
+}
+
+.index-bottom-spacer {
+  height: 28px;
+  flex-shrink: 0;
+}
+
+#place-index-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+#place-index-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#place-index-content::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.22);
+  border-radius: 999px;
+}
+
+#place-index-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.32);
+}
+
+.index-county {
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+
+.index-district {
+  margin-top: 8px;
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #666;
+}
+
+.index-place-row {
+  margin: 6px 0 6px 30px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #333;
+}
+
+.index-place-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.index-date-list {
+  color: #888;
+}
+
+.index-date-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0 0 0 1px;
+
+  color: #666;
+  font-size: 12px;
+  font-family: sans-serif;
+  cursor: pointer;
+  text-decoration: none;
+  text-underline-offset: 3px;
+}
+
+.index-date-btn::before {
+  content: "｜";
+  color: #aaa;
+  text-decoration: none;
+  display: inline-block;
+  margin-right: 1px;
+}
+
+.index-date-btn:hover {
+  color: #111;
+}
+
+.index-date {
+  color: #777;
+  font-size: 12px;
+}
+
+/* 手機版：避免擋到底下時間軸 */
+@media (max-width: 767px) {
+  #place-index-panel {
+    right: 12px;
+    left: auto;
+    bottom: 44px;
+
+    width: min(300px, calc(100vw - 32px));
+    max-height: 58vh;
+  }
+
+  #place-index-content {
+    max-height: calc(58vh - 53px);
+    padding-bottom: 64px;
+  }
+}
+}
   </style>
 </head>
 
@@ -338,6 +516,16 @@
 <div id="timeline-wrap">
   <button id="timeline-label" type="button"></button>
   <input type="range" id="timeline-slider" min="0" max="0" value="0" step="1">
+</div>
+
+<button id="place-index-toggle" type="button">地點清單</button>
+
+<div id="place-index-panel">
+  <div class="place-index-header">
+    <b>地點清單</b>
+    <button id="place-index-close" type="button">×</button>
+  </div>
+  <div id="place-index-content"></div>
 </div>
 
 <!-- overlay -->
@@ -419,7 +607,7 @@ const data = [
     "2025.08.23-25",
     22.179908, 
     120.891753,
-    "墾丁",
+    "墾丁出差",
     "Day1龍磐公園>星星草原>Day2旭海>199線道>Day3瑪家",
     [
       { img: "p1140824-1.jpg", title: "厚殼鴨腱藤" },
@@ -634,8 +822,8 @@ const data = [
     "2025.11.16",
     21.946411358174146,
     120.83920951537594,
-    "墾丁樣區查錯Day0",
     "風吹砂",
+    "風吹砂海灘",
     [
       { img: "p1141116-1.jpg", title: "一到墾丁馬上去看蒟蒻薯" },
       { img: "p1141116-2.jpg", title: "飽滿果實" },
@@ -762,8 +950,8 @@ const data = [
     "2025.11.21",
     21.929706,
     120.743203,
-    "墾丁樣區查錯Day5",
-    "大光海邊橙花破布子>卡米克民宿周遭>小狗灣",
+    "大光海邊",
+    "橙花破布子>卡米克民宿周遭>小狗灣",
     [
       { img: "p1141121-1.jpg", title: "走錯路發現一片黃細心!(在別人家風水旁" },
       { img: "p1141121-2.jpg", title: "迷你小花，果實密被腺毛" },
@@ -1042,6 +1230,40 @@ const data = [
 
 
 /* 🌿 5. repeat 點目前第幾頁 */
+/* 🌿 地點縣市區資料 */
+const locationMeta = {
+  "向天池": { county: "臺北市", district: "北投區" },
+  "二子坪": { county: "臺北市", district: "北投區" },
+  "荷蘭古道": { county: "臺北市", district: "士林區" },
+  "關渡自然公園": { county: "臺北市", district: "北投區" },
+
+  "龍洞": { county: "新北市", district: "貢寮區" },
+  "龍洞稜": { county: "新北市", district: "貢寮區" },
+  "草山戰備道": { county: "新北市", district: "瑞芳區" },
+  "大屯溪小徑訪觀音谷": { county: "新北市", district: "淡水區" },
+  "二格山": { county: "新北市", district: "石碇區" },
+  "內洞國家森林遊樂區": { county: "新北市", district: "烏來區" },
+  "桶後林道": { county: "新北市", district: "烏來區" },
+  "鶯子嶺": { county: "宜蘭縣", district: "頭城鎮" },
+
+  "北得拉曼山": { county: "新竹縣", district: "尖石鄉" },
+  "橫屏背生態賞魚步道": { county: "新竹縣", district: "橫山鄉" },
+  "大混山": { county: "新竹縣", district: "尖石鄉" },
+
+  "大霸尖山": { county: "新竹縣", district: "尖石鄉" },
+
+  "宜蘭三日遊": { county: "宜蘭縣", district: "礁溪鄉" },
+  "東澳海邊露營": { county: "宜蘭縣", district: "蘇澳鎮" },
+
+  "墾丁出差": { county: "屏東縣", district: "恆春鎮" },
+  "風吹砂": { county: "屏東縣", district: "恆春鎮" },
+  "墾丁樣區": { county: "屏東縣", district: "恆春鎮" },
+  "大光海邊": { county: "屏東縣", district: "恆春鎮" },
+
+  "台中三天兩夜行": { county: "臺中市", district: "多區" },
+  "貢寮週六工作日": { county: "新北市", district: "貢寮區" }
+};
+
 const repeatState = {};
 const repeatMarkers = {};
 
@@ -1342,10 +1564,16 @@ data.forEach((item, idx) => {
       timelineDates.push(markerDate);
 
       // ⭐ 每一天都放進 timelineItems
+      const meta = locationMeta[place] || { county: "未分類", district: "未分類" };
+
       timelineItems.push({
-        date: markerDate,
-        marker: marker
-      });
+      date: markerDate,
+      rawDate: visit.date,
+      place: place,
+      county: meta.county,
+      district: meta.district,
+      marker: marker
+    });
 
       marker.on('click', function () {
         repeatState[markerId] = visitIndex;
@@ -1376,10 +1604,16 @@ data.forEach((item, idx) => {
     markers.push(marker);
     timelineDates.push(markerDate);
 
+    const meta = locationMeta[place] || { county: "未分類", district: "未分類" };
+
     timelineItems.push({
-      date: markerDate,
-      marker: marker
-    });
+    date: markerDate,
+    rawDate: date,
+    place: place,
+    county: meta.county,
+    district: meta.district,
+    marker: marker
+  });
 
     marker.on('click', function () {
       const html = createSinglePopup(date, place, route, photos, note);
@@ -1456,6 +1690,95 @@ timelineLabel.addEventListener('click', function () {
 
 // 初始
 updateTimeline(0);
+
+function buildPlaceIndex() {
+  const content = document.getElementById('place-index-content');
+
+  const grouped = {};
+
+  timelineItems.forEach(item => {
+    const county = item.county || "未分類";
+    const district = item.district || "未分類";
+    const place = item.place || "未命名地點";
+
+    if (!grouped[county]) grouped[county] = {};
+    if (!grouped[county][district]) grouped[county][district] = {};
+    if (!grouped[county][district][place]) grouped[county][district][place] = [];
+
+    grouped[county][district][place].push(item);
+  });
+
+  let html = "";
+
+  Object.keys(grouped).sort().forEach(county => {
+    html += `<div class="index-county">${county}</div>`;
+
+    Object.keys(grouped[county]).sort().forEach(district => {
+      html += `<div class="index-district">${district}</div>`;
+
+      Object.keys(grouped[county][district]).sort().forEach(place => {
+        const items = grouped[county][district][place]
+          .sort((a, b) => a.date.localeCompare(b.date));
+
+        html += `
+          <div class="index-place-row">
+            <span class="index-place-name">${place}</span>
+            <span class="index-date-list">
+              ${items.map(item => `
+                <button 
+                  class="index-date-btn" 
+                  type="button" 
+                  data-date="${item.date}"
+                >
+                  ${item.rawDate || item.date}
+                </button>
+              `).join("")}
+            </span>
+          </div>
+        `;
+      });
+    });
+  });
+
+  content.innerHTML = html + `<div class="index-bottom-spacer"></div>`;
+
+  content.querySelectorAll('.index-date-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      const date = this.dataset.date;
+      const item = timelineItems.find(x => x.date === date);
+
+      if (!item) return;
+
+      const index = timelineItems.findIndex(x => x.date === date);
+      if (index >= 0) {
+        timelineSlider.value = index;
+        updateTimeline(index);
+      }
+
+      item.marker.fire('click');
+
+      document.getElementById('place-index-panel').classList.remove('show');
+    });
+  });
+}
+
+const placeIndexToggle = document.getElementById('place-index-toggle');
+const placeIndexPanel = document.getElementById('place-index-panel');
+const placeIndexClose = document.getElementById('place-index-close');
+
+placeIndexToggle.addEventListener('click', function () {
+  placeIndexPanel.classList.toggle('show');
+});
+
+placeIndexClose.addEventListener('click', function () {
+  placeIndexPanel.classList.remove('show');
+});
+
+// 防止點索引時拖到地圖
+L.DomEvent.disableClickPropagation(placeIndexPanel);
+L.DomEvent.disableScrollPropagation(placeIndexPanel);
+
+buildPlaceIndex();
 
 let touchStartX = 0;
 let touchStartY = 0;
