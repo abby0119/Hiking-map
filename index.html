@@ -109,29 +109,30 @@
 }
 
 /* 💻 平板以上 */
-@media (min-width: 767px) {
+@media (min-width: 768px) {
   .overlay-card {
-    width: min(360px, calc(100vw - 40px));
-    max-height: min(88vh, 760px);
+    width: min(420px, calc(100vw - 40px));
+    max-height: min(88vh, 820px);
   }
 
   .overlay-body {
-    padding: 14px 13px 14px;
+    padding: 16px 15px 16px;
   }
 
   .photo-scroll img {
-    height: clamp(220px, 32vh, 320px) !important;
+    height: clamp(260px, 38vh, 380px) !important;
   }
 }
 
 /* 🔄 橫向（平板橫放 / 電腦） */
 @media (min-width: 768px) and (orientation: landscape) {
   .overlay-card {
+    width: min(420px, calc(100vw - 40px)); 
     max-height: 84vh;
   }
 
   .photo-scroll img {
-    height: clamp(200px, 28vh, 280px) !important;
+    height: clamp(260px, 38vh, 380px) !important;
   }
 }
     
