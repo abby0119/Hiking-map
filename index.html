@@ -462,7 +462,7 @@
   border: none;
   background: transparent;
   padding: 0;
-  margin: 0 0 0 1px;
+  margin: 0 0 0 0px;
 
   color: #666;
   font-size: 12px;
@@ -477,7 +477,7 @@
   color: #aaa;
   text-decoration: none;
   display: inline-block;
-  margin-right: 1px;
+  margin-right: 0px;
 }
 
 .index-date-btn:hover {
@@ -1710,33 +1710,58 @@ function buildPlaceIndex() {
 
   let html = "";
 
-  Object.keys(grouped).sort().forEach(county => {
+  const countyOrder = ["臺北市", "新北市", "宜蘭縣", "新竹縣", "臺中市", "屏東縣", "未分類"];
+
+Object.keys(grouped)
+  .sort((a, b) => {
+    const ai = countyOrder.indexOf(a);
+    const bi = countyOrder.indexOf(b);
+
+    if (ai !== -1 && bi !== -1) return ai - bi;
+    if (ai !== -1) return -1;
+    if (bi !== -1) return 1;
+
+    return a.localeCompare(b, "zh-Hant");
+  })
+  .forEach(county => {
     html += `<div class="index-county">${county}</div>`;
 
     Object.keys(grouped[county]).sort().forEach(district => {
       html += `<div class="index-district">${district}</div>`;
 
-      Object.keys(grouped[county][district]).sort().forEach(place => {
-        const items = grouped[county][district][place]
-          .sort((a, b) => a.date.localeCompare(b.date));
+    Object.keys(grouped[county][district])
+  .sort((placeA, placeB) => {
+    const firstDateA = grouped[county][district][placeA]
+      .map(item => item.date)
+      .sort()[0];
 
-        html += `
-          <div class="index-place-row">
-            <span class="index-place-name">${place}</span>
-            <span class="index-date-list">
-              ${items.map(item => `
-                <button 
-                  class="index-date-btn" 
-                  type="button" 
-                  data-date="${item.date}"
-                >
-                  ${item.rawDate || item.date}
-                </button>
-              `).join("")}
-            </span>
-          </div>
-        `;
-      });
+    const firstDateB = grouped[county][district][placeB]
+      .map(item => item.date)
+      .sort()[0];
+
+    return firstDateA.localeCompare(firstDateB);
+  })
+  .forEach(place => {
+    const items = grouped[county][district][place]
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    html += `
+      <div class="index-place-row">
+        <span class="index-place-name">${place}</span>
+        <span class="index-date-list">
+          ${items.map(item => `
+            <button 
+              class="index-date-btn" 
+              type="button" 
+              data-date="${item.date}"
+            >
+              ${item.rawDate || item.date}
+            </button>
+          `).join("")}
+        </span>
+      </div>
+    `;
+  });
     });
   });
 
