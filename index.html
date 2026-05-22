@@ -388,6 +388,41 @@
   border-bottom: 1px solid rgba(0,0,0,0.08);
 }
 
+.place-index-tabs {
+  display: flex;
+  align-items: center;
+  padding: 8px 14px 5px 24px;
+  background: rgba(255,255,255,0.92);
+  font-family: sans-serif;
+}
+
+.place-index-tab {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+
+  color: #888;
+  font-size: 12px;
+  font-family: sans-serif;
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.place-index-tab.active {
+  color: #333;
+  font-weight: 700;
+}
+
+.place-index-tab-divider {
+  margin: 0 5px;
+  color: #aaa;
+  font-size: 12px;
+}
+
 #place-index-close {
   border: none;
   background: #f1f1f1;
@@ -408,7 +443,7 @@
 #place-index-content {
   padding: 10px 14px 56px 24px;
   overflow-y: auto;
-  max-height: calc(min(68vh, 560px) - 53px);
+  max-height: calc(min(68vh, 560px) - 88px);
 }
 
 .index-bottom-spacer {
@@ -499,6 +534,58 @@
   font-size: 12px;
 }
 
+.time-month {
+  margin-top: 24px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+
+.time-month:first-child {
+  margin-top: 3px;
+}
+
+.time-index-row {
+  margin: 3px 0 3px 30px;
+  line-height: 1.5;
+}
+
+.index-time-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+
+  font-family: sans-serif;
+  cursor: pointer;
+  text-align: left;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.index-time-date {
+  color: #666;
+  font-size: 12px;
+}
+
+.index-time-divider {
+  color: #aaa;
+  font-size: 12px;
+}
+
+.index-time-place {
+  color: #333;
+  font-size: 13px;
+}
+
+.index-time-btn:hover .index-time-date,
+.index-time-btn:hover .index-time-place {
+  color: #111;
+}
+
+
 /* 手機版：避免擋到底下時間軸 */
 @media (max-width: 767px) {
   #place-index-panel {
@@ -511,10 +598,9 @@
   }
 
   #place-index-content {
-    max-height: calc(58vh - 53px);
+    max-height: calc(58vh - 88px);
     padding-bottom: 64px;
   }
-}
 }
   </style>
 </head>
@@ -535,6 +621,13 @@
     <b>地點清單</b>
     <button id="place-index-close" type="button">×</button>
   </div>
+
+  <div class="place-index-tabs">
+    <button class="place-index-tab active" type="button" data-mode="area">依地區</button>
+    <span class="place-index-tab-divider">｜</span>
+    <button class="place-index-tab" type="button" data-mode="time">依時間</button>
+  </div>
+
   <div id="place-index-content"></div>
 </div>
 
@@ -1893,9 +1986,24 @@ timelineLabel.addEventListener('click', function () {
 // 初始
 updateTimeline(0);
 
+/* 🌿 地點清單模式：area = 依地區，time = 依時間 */
+let placeIndexMode = "area";
+
+
+/* 🌿 根據目前模式建立地點清單 */
 function buildPlaceIndex() {
   const content = document.getElementById('place-index-content');
 
+  if (placeIndexMode === "time") {
+    buildTimeIndex(content);
+  } else {
+    buildAreaIndex(content);
+  }
+}
+
+
+/* 🌿 依地區：縣市 > 區 > 地點 */
+function buildAreaIndex(content) {
   const grouped = {};
 
   timelineItems.forEach(item => {
@@ -1912,75 +2020,138 @@ function buildPlaceIndex() {
 
   let html = "";
 
-  const countyOrder = ["臺北市", "新北市", "基隆市", "宜蘭縣", "新竹縣", "臺中市", "屏東縣", "未分類"];
+  const countyOrder = [
+    "臺北市",
+    "新北市",
+    "宜蘭縣",
+    "新竹縣",
+    "臺中市",
+    "屏東縣",
+    "未分類"
+  ];
 
-Object.keys(grouped)
-  .sort((a, b) => {
-    const ai = countyOrder.indexOf(a);
-    const bi = countyOrder.indexOf(b);
+  Object.keys(grouped)
+    .sort((a, b) => {
+      const ai = countyOrder.indexOf(a);
+      const bi = countyOrder.indexOf(b);
 
-    if (ai !== -1 && bi !== -1) return ai - bi;
-    if (ai !== -1) return -1;
-    if (bi !== -1) return 1;
+      if (ai !== -1 && bi !== -1) return ai - bi;
+      if (ai !== -1) return -1;
+      if (bi !== -1) return 1;
 
-    return a.localeCompare(b, "zh-Hant");
-  })
-  .forEach(county => {
-    html += `<div class="index-county">${county}</div>`;
+      return a.localeCompare(b, "zh-Hant");
+    })
+    .forEach(county => {
+      html += `<div class="index-county">${county}</div>`;
 
-    Object.keys(grouped[county]).sort().forEach(district => {
-      html += `<div class="index-district">${district}</div>`;
+      Object.keys(grouped[county])
+        .sort((a, b) => a.localeCompare(b, "zh-Hant"))
+        .forEach(district => {
+          html += `<div class="index-district">${district}</div>`;
 
-    Object.keys(grouped[county][district])
-  .sort((placeA, placeB) => {
-    const firstDateA = grouped[county][district][placeA]
-      .map(item => item.date)
-      .sort()[0];
+          Object.keys(grouped[county][district])
+            .sort((placeA, placeB) => {
+              const firstDateA = grouped[county][district][placeA]
+                .map(item => item.date)
+                .sort()[0];
 
-    const firstDateB = grouped[county][district][placeB]
-      .map(item => item.date)
-      .sort()[0];
+              const firstDateB = grouped[county][district][placeB]
+                .map(item => item.date)
+                .sort()[0];
 
-    return firstDateA.localeCompare(firstDateB);
-  })
-  .forEach(place => {
-    const items = grouped[county][district][place]
-      .sort((a, b) => a.date.localeCompare(b.date));
+              return firstDateA.localeCompare(firstDateB);
+            })
+            .forEach(place => {
+              const items = grouped[county][district][place]
+                .slice()
+                .sort((a, b) => a.date.localeCompare(b.date));
 
-    html += `
-      <div class="index-place-row">
-        <span class="index-place-name">${place}</span>
-        <span class="index-date-list">
-          ${items.map(item => `
-            <button 
-              class="index-date-btn" 
-              type="button" 
-              data-date="${item.date}"
-            >
-              ${item.rawDate || item.date}
-            </button>
-          `).join("")}
-        </span>
-      </div>
-    `;
-  });
+              html += `
+                <div class="index-place-row">
+                  <span class="index-place-name">${place}</span>
+                  <span class="index-date-list">
+                    ${items.map(item => `
+                      <button 
+                        class="index-date-btn index-open-btn" 
+                        type="button" 
+                        data-date="${item.date}"
+                      >
+                        ${item.rawDate || item.date}
+                      </button>
+                    `).join("")}
+                  </span>
+                </div>
+              `;
+            });
+        });
     });
-  });
 
   content.innerHTML = html + `<div class="index-bottom-spacer"></div>`;
 
-  content.querySelectorAll('.index-date-btn').forEach(btn => {
+  bindIndexButtons();
+}
+
+
+/* 🌿 依時間：月份 > 日期與地點 */
+function buildTimeIndex(content) {
+  const grouped = {};
+
+  timelineItems
+    .slice()
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .forEach(item => {
+      const month = item.date.slice(0, 7).replace("-", ".");
+
+      if (!grouped[month]) {
+        grouped[month] = [];
+      }
+
+      grouped[month].push(item);
+    });
+
+  let html = "";
+
+  Object.keys(grouped)
+    .sort()
+    .forEach(month => {
+      html += `<div class="time-month">${month}</div>`;
+
+      grouped[month].forEach(item => {
+        html += `
+          <div class="time-index-row">
+            <button
+              class="index-time-btn index-open-btn"
+              type="button"
+              data-date="${item.date}"
+            >
+              <span class="index-time-date">${item.rawDate || item.date}</span><span class="index-time-divider">｜</span><span class="index-time-place">${item.place}</span>
+            </button>
+          </div>
+        `;
+      });
+    });
+
+  content.innerHTML = html + `<div class="index-bottom-spacer"></div>`;
+
+  bindIndexButtons();
+}
+
+
+/* 🌿 點地點清單中的日期或地點：同步時間軸並打開字卡 */
+function bindIndexButtons() {
+  const content = document.getElementById('place-index-content');
+
+  content.querySelectorAll('.index-open-btn').forEach(btn => {
     btn.addEventListener('click', function () {
       const date = this.dataset.date;
-      const item = timelineItems.find(x => x.date === date);
+      const index = timelineItems.findIndex(item => item.date === date);
 
-      if (!item) return;
+      if (index < 0) return;
 
-      const index = timelineItems.findIndex(x => x.date === date);
-      if (index >= 0) {
-        timelineSlider.value = index;
-        updateTimeline(index);
-      }
+      const item = timelineItems[index];
+
+      timelineSlider.value = index;
+      updateTimeline(index);
 
       item.marker.fire('click');
 
@@ -1989,6 +2160,8 @@ Object.keys(grouped)
   });
 }
 
+
+/* 🌿 打開 / 關閉地點清單 */
 const placeIndexToggle = document.getElementById('place-index-toggle');
 const placeIndexPanel = document.getElementById('place-index-panel');
 const placeIndexClose = document.getElementById('place-index-close');
@@ -2001,10 +2174,29 @@ placeIndexClose.addEventListener('click', function () {
   placeIndexPanel.classList.remove('show');
 });
 
-// 防止點索引時拖到地圖
+
+/* 🌿 切換依地區 / 依時間 */
+document.querySelectorAll('.place-index-tab').forEach(tab => {
+  tab.addEventListener('click', function () {
+    placeIndexMode = this.dataset.mode;
+
+    document.querySelectorAll('.place-index-tab').forEach(item => {
+      item.classList.remove('active');
+    });
+
+    this.classList.add('active');
+
+    buildPlaceIndex();
+  });
+});
+
+
+/* 🌿 防止操作地點清單時拖動地圖 */
 L.DomEvent.disableClickPropagation(placeIndexPanel);
 L.DomEvent.disableScrollPropagation(placeIndexPanel);
 
+
+/* 🌿 預設先顯示依地區 */
 buildPlaceIndex();
 
 let touchStartX = 0;
