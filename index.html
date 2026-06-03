@@ -602,12 +602,144 @@
     padding-bottom: 64px;
   }
 }
+
+/* ===== 生日開場小卡 ===== */
+body.intro-open {
+  overflow: hidden;
+}
+
+#birthday-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.68);
+  backdrop-filter: blur(5px) saturate(0.8);
+  -webkit-backdrop-filter: blur(5px) saturate(0.8);
+}
+
+#birthday-intro.hide {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+}
+
+#birthday-intro-card {
+  width: min(360px, calc(100vw - 32px));
+  background: rgba(255,255,255,0.86);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 24px;
+  padding: 28px 24px 24px;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+  font-family: sans-serif;
+ 
+  position: relative;
+  z-index: 1;
+}
+
+#birthday-intro-card h1 {
+  margin: 6px 0 14px;
+  font-size: 28px;
+  line-height: 1.25;
+  color: #2f4f3e;
+  font-weight: 500;
+}
+
+#birthday-intro-card p {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #4a4a4a;
+}
+
+.birthday-small {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: #7a8f7e;
+  text-transform: uppercase;
+}
+
+.birthday-sign {
+  color: #5b6b5f;
+}
+
+#birthday-enter-btn {
+  margin-top: 10px;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-family: sans-serif;
+  cursor: pointer;
+  color: white;
+  background: #6aa77a;
+  box-shadow: none;
+}
+
+#birthday-enter-btn:hover {
+  transform: translateY(-1px);
+}
+
+#birthday-enter-btn:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 767px) {
+  #birthday-intro-card {
+    padding: 24px 18px 20px;
+    border-radius: 20px;
+  }
+
+  #birthday-intro-card h1 {
+    font-size: 24px;
+  }
+
+  #birthday-intro-card p {
+    font-size: 14px;
+    line-height: 1.75;
+  }
+
+  #birthday-enter-btn {
+  width: auto;
+  display: inline-block;
+  padding: 11px 18px;
+}
+}
+
   </style>
 </head>
 
 <body>
 
 <div id="map"></div>
+
+<!-- 生日開場小卡 -->
+<div id="birthday-intro">
+
+  <div id="birthday-intro-card">
+    <div class="birthday-small">Happy Birthday</div>
+    <h1>祝寶貝生日快樂</h1>
+    <p>
+      這是送給你的地圖，<br>
+      裡面記錄我們一起走過的地方，<br>
+      還有好多好多回憶。
+    </p>
+    <p class="birthday-sign">
+      希望以後能繼續和你探索世界，<br>
+      走向更多的山、海和森林。
+    </p>
+    <button id="birthday-enter-btn" type="button">打開地圖 🌿</button>
+  </div>
+</div>
 
 <div id="timeline-wrap">
   <button id="timeline-label" type="button"></button>
@@ -2498,6 +2630,21 @@ document.addEventListener('wheel', function (e) {
     scroller.scrollLeft += e.deltaY;
   }
 }, { passive: false });
+
+/* ===== 生日開場小卡 ===== */
+document.body.classList.add("intro-open");
+
+const birthdayIntro = document.getElementById("birthday-intro");
+const birthdayEnterBtn = document.getElementById("birthday-enter-btn");
+
+birthdayEnterBtn.addEventListener("click", function () {
+  birthdayIntro.classList.add("hide");
+  document.body.classList.remove("intro-open");
+
+  setTimeout(function () {
+    birthdayIntro.style.display = "none";
+  }, 1200);
+});
 
 </script>
 
