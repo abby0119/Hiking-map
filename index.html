@@ -909,12 +909,6 @@ body.intro-open {
   }
 }     
 
-.wishlist-marker-control {
-  margin-bottom: 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(0,0,0,0.08);
-}
-
 #wish-marker-toggle {
   border: none;
   border-radius: 999px;
@@ -931,6 +925,35 @@ body.intro-open {
 #wish-marker-toggle.active {
   background: #e0b72e;
   color: #3f3000;
+}    
+
+.wishlist-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#wish-marker-toggle {
+  border: none;
+  border-radius: 999px;
+  padding: 3px 8px;
+
+  background: #555;
+  color: #fff;
+
+  font-size: 12px;
+  font-family: sans-serif;
+  line-height: 1.4;
+  cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#wish-marker-toggle.active {
+  background: #222;
+  color: #fff;
 }    
   </style>
 </head>
@@ -969,16 +992,16 @@ body.intro-open {
 
 <div id="wishlist-panel">
   <div class="wishlist-header">
-    <b>願望清單</b>
+    <div class="wishlist-title-row">
+      <b>願望清單</b>
+      <button id="wish-marker-toggle" type="button">顯示</button>
+    </div>
     <button id="wishlist-close" type="button">×</button>
   </div>
 
   <div class="wishlist-body">
 
-    <div class="wishlist-marker-control">
-    <button id="wish-marker-toggle" type="button">顯示願望點</button>
-    <p id="wish-marker-status">願望點目前未顯示</p>
-  </div>
+  <div class="wishlist-body">
     
     <div id="auth-area">
       <button id="google-login-btn" type="button">使用 Google 登入以新增願望</button>
