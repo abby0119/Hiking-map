@@ -911,15 +911,25 @@ body.intro-open {
 
 #wish-marker-toggle {
   border: none;
-  border-radius: 999px;
-  padding: 8px 12px;
-  margin-bottom: 6px;
+  background: transparent;
+  padding: 0;
+  margin: 0;
 
-  background: #f0c84b;
-  color: #4f3b00;
-  font-size: 13px;
+  color: #aaa;
+  font-size: 12px;
   font-family: sans-serif;
+  font-weight: 700;
+  line-height: 1;
   cursor: pointer;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#wish-marker-toggle.active {
+  color: #111;
+  font-weight: 700;
 }
 
 #wish-marker-toggle.active {
@@ -929,21 +939,21 @@ body.intro-open {
 
 .wishlist-title-row {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: baseline;
+  gap: 10px;
 }
 
 #wish-marker-toggle {
   border: none;
-  border-radius: 999px;
-  padding: 3px 8px;
+  background: transparent;
+  padding: 0;
+  margin: 0;
 
-  background: #555;
-  color: #fff;
-
+  color: #aaa;
   font-size: 12px;
   font-family: sans-serif;
-  line-height: 1.4;
+  font-weight: 700;
+  line-height: 1;
   cursor: pointer;
 
   appearance: none;
@@ -952,7 +962,7 @@ body.intro-open {
 }
 
 #wish-marker-toggle.active {
-  background: #222;
+  background: #111;
   color: #fff;
 }    
   </style>
