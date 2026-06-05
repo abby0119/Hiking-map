@@ -715,6 +715,171 @@ body.intro-open {
 }
 }
 
+#auth-area {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+#google-login-btn,
+#google-logout-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+
+  background: #f2a23a;
+  color: white;
+  font-size: 13px;
+  font-family: sans-serif;
+  cursor: pointer;
+}
+
+#google-logout-btn {
+  background: #aaa;
+}
+
+#login-status {
+  margin: 4px 0 0;
+  color: #666;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* ===== 願望清單按鈕 ===== */
+#wishlist-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 82px;
+  z-index: 9998;
+
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  color: #333;
+  font-size: 13px;
+  font-family: sans-serif;
+  cursor: pointer;
+}
+
+/* ===== 願望清單面板 ===== */
+#wishlist-panel {
+  position: fixed;
+  right: 16px;
+  bottom: 132px;
+  z-index: 9999;
+
+  width: min(320px, calc(100vw - 32px));
+  max-height: min(70vh, 560px);
+
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+
+  overflow: hidden;
+  display: none;
+  font-family: sans-serif;
+}
+
+#wishlist-panel.show {
+  display: block;
+}
+
+.wishlist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.95);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+#wishlist-close {
+  border: none;
+  background: #f1f1f1;
+  border-radius: 999px;
+  width: 28px;
+  height: 28px;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.wishlist-body {
+  padding: 12px 14px 16px;
+  overflow-y: auto;
+  max-height: calc(min(70vh, 560px) - 54px);
+}
+
+.wishlist-body label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #555;
+}
+
+.wishlist-body input,
+.wishlist-body textarea,
+.wishlist-body select {
+  width: 100%;
+  margin-top: 4px;
+  padding: 8px 9px;
+  box-sizing: border-box;
+
+  border: 1px solid rgba(0,0,0,0.16);
+  border-radius: 10px;
+
+  font-size: 14px;
+  font-family: sans-serif;
+}
+
+#wish-submit {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  margin-top: 4px;
+
+  background: #f2a23a;
+  color: white;
+  font-size: 14px;
+  font-family: sans-serif;
+  cursor: pointer;
+}
+
+#wish-message {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #666;
+}
+
+@media (max-width: 767px) {
+  #wishlist-toggle {
+    right: 12px;
+    bottom: 78px;
+  }
+
+  #wishlist-panel {
+    right: 12px;
+    bottom: 118px;
+    width: min(300px, calc(100vw - 32px));
+    max-height: 60vh;
+  }
+
+  .wishlist-body {
+    max-height: calc(60vh - 54px);
+  }
+}
+
   </style>
 </head>
 
@@ -748,6 +913,46 @@ body.intro-open {
 
 <button id="place-index-toggle" type="button">地點清單</button>
 
+<button id="wishlist-toggle" type="button">願望清單</button>
+
+<div id="wishlist-panel">
+  <div class="wishlist-header">
+    <b>願望清單</b>
+    <button id="wishlist-close" type="button">×</button>
+  </div>
+
+  <div class="wishlist-body">
+    <div id="auth-area">
+      <button id="google-login-btn" type="button">使用 Google 登入以新增願望</button>
+      <button id="google-logout-btn" type="button" style="display:none;">登出</button>
+      <p id="login-status">尚未登入。可以查看願望點，新增時需要登入。</p>
+    </div>
+
+    <label>
+      地點名稱
+      <input id="wish-name" type="text" placeholder="例如：蘭嶼">
+    </label>
+
+    <label>
+      緯度 lat
+      <input id="wish-lat" type="number" step="any" placeholder="例如：22.05">
+    </label>
+
+    <label>
+      經度 lng
+      <input id="wish-lng" type="number" step="any" placeholder="例如：121.55">
+    </label>
+
+    <label>
+      備忘錄
+      <textarea id="wish-note" rows="3" placeholder="想一起去看什麼？"></textarea>
+    </label>
+
+    <button id="wish-submit" type="button">加入願望清單</button>
+    <p id="wish-message"></p>
+  </div>
+</div>
+
 <div id="place-index-panel">
   <div class="place-index-header">
     <b>地點清單</b>
@@ -776,6 +981,9 @@ body.intro-open {
 </div>
   
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 
 <script>
 
@@ -816,6 +1024,29 @@ function createPinIcon(color) {
     iconAnchor: [10, 10]
   });
 }
+
+/* 🌟 Firebase 設定 */
+const firebaseConfig = {
+  apiKey: "AIzaSyD3y9ffBA6CU-uLaimPWKOSBaP4XfPuJ4A",
+  authDomain: "hiking-map-wishlist.firebaseapp.com",
+  databaseURL: "https://hiking-map-wishlist-default-rtdb.asia-southeast1.firebasedatabase.app/",
+  projectId: "hiking-map-wishlist",
+  storageBucket: "hiking-map-wishlist.firebasestorage.app",
+  messagingSenderId: "1017175703695",
+  appId: "1:1017175703695:web:a25d55a4087c3db79930fa"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+const wishDb = firebase.database();
+const wishesRef = wishDb.ref("wishes");
+
+/* 願望清單 marker */
+let wishMarkers = {};
+const wishIcon = createPinIcon("#f6c343")
 
 
 /* 🌿 4. 資料 */
@@ -2779,6 +3010,153 @@ birthdayEnterBtn.addEventListener("click", function () {
     birthdayIntro.style.display = "none";
   }, 1200);
 });
+
+/* 🌟 願望清單面板開關 */
+const wishlistToggle = document.getElementById("wishlist-toggle");
+const wishlistPanel = document.getElementById("wishlist-panel");
+const wishlistClose = document.getElementById("wishlist-close");
+
+wishlistToggle.addEventListener("click", function () {
+  wishlistPanel.classList.toggle("show");
+});
+
+wishlistClose.addEventListener("click", function () {
+  wishlistPanel.classList.remove("show");
+});
+
+/* 🌟 Google 登入 / 登出 */
+const googleLoginBtn = document.getElementById("google-login-btn");
+const googleLogoutBtn = document.getElementById("google-logout-btn");
+const loginStatus = document.getElementById("login-status");
+
+googleLoginBtn.addEventListener("click", function () {
+  auth.signInWithPopup(googleProvider)
+    .catch(function (error) {
+      console.error(error);
+      loginStatus.textContent = "登入失敗，請再試一次。";
+    });
+});
+
+googleLogoutBtn.addEventListener("click", function () {
+  auth.signOut();
+});
+
+auth.onAuthStateChanged(function (user) {
+  if (user) {
+    googleLoginBtn.style.display = "none";
+    googleLogoutBtn.style.display = "inline-block";
+    loginStatus.textContent = "已登入：" + (user.displayName || user.email);
+  } else {
+    googleLoginBtn.style.display = "inline-block";
+    googleLogoutBtn.style.display = "none";
+    loginStatus.textContent = "尚未登入。可以查看願望點，新增時需要登入。";
+  }
+});
+
+/* 🌟 新增願望 */
+const wishSubmit = document.getElementById("wish-submit");
+const wishMessage = document.getElementById("wish-message");
+
+wishSubmit.addEventListener("click", function () {
+  const user = auth.currentUser;
+
+  if (!user) {
+    wishMessage.textContent = "請先使用 Google 登入，再新增願望。";
+    auth.signInWithPopup(googleProvider).catch(function (error) {
+      console.error(error);
+      wishMessage.textContent = "登入失敗，請再試一次。";
+    });
+    return;
+  }
+
+  const name = document.getElementById("wish-name").value.trim();
+  const lat = Number(document.getElementById("wish-lat").value);
+  const lng = Number(document.getElementById("wish-lng").value);
+  const note = document.getElementById("wish-note").value.trim();
+
+  if (!name || Number.isNaN(lat) || Number.isNaN(lng)) {
+    wishMessage.textContent = "請填寫地點名稱、緯度和經度。";
+    return;
+  }
+
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    wishMessage.textContent = "緯度或經度格式好像不太對。";
+    return;
+  }
+
+  const newWish = {
+    name: name,
+    lat: lat,
+    lng: lng,
+    note: note,
+    authorName: user.displayName || "",
+    authorEmail: user.email || "",
+    authorUid: user.uid,
+    createdAt: new Date().toISOString()
+  };
+
+  wishesRef.push(newWish)
+    .then(function () {
+      wishMessage.textContent = "已加入願望清單 ✨";
+
+      document.getElementById("wish-name").value = "";
+      document.getElementById("wish-lat").value = "";
+      document.getElementById("wish-lng").value = "";
+      document.getElementById("wish-note").value = "";
+    })
+    .catch(function (error) {
+      console.error(error);
+      wishMessage.textContent = "新增失敗，可能是登入或資料庫權限問題。";
+    });
+});
+
+/* 🌟 即時讀取 Firebase 願望清單 */
+wishesRef.on("value", function (snapshot) {
+  const wishes = snapshot.val() || {};
+
+  Object.keys(wishMarkers).forEach(function (id) {
+    map.removeLayer(wishMarkers[id]);
+  });
+  wishMarkers = {};
+
+  Object.keys(wishes).forEach(function (id) {
+    const wish = wishes[id];
+
+    if (
+      !wish ||
+      typeof wish.lat !== "number" ||
+      typeof wish.lng !== "number" ||
+      !wish.name
+    ) {
+      return;
+    }
+
+    const popupHtml = `
+      <div style="font-family:sans-serif; min-width:160px;">
+        <b>${escapeHtml(wish.name)}</b><br>
+        <span style="color:#666; font-size:12px;">願望地點</span>
+        ${wish.note ? `<p style="margin:6px 0 0; font-size:13px;">${escapeHtml(wish.note)}</p>` : ""}
+        ${wish.authorName ? `<p style="margin:6px 0 0; font-size:12px; color:#888;">by ${escapeHtml(wish.authorName)}</p>` : ""}
+      </div>
+    `;
+
+    const marker = L.marker([wish.lat, wish.lng], { icon: wishIcon })
+      .addTo(map)
+      .bindPopup(popupHtml);
+
+    wishMarkers[id] = marker;
+  });
+});
+
+/* 避免輸入內容破壞 HTML */
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 </script>
 
