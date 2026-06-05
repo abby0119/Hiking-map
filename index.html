@@ -728,7 +728,7 @@ body.intro-open {
   padding: 8px 12px;
   margin-bottom: 6px;
 
-  background: #f2a23a;
+  background: #f0c84b;
   color: white;
   font-size: 13px;
   font-family: sans-serif;
@@ -757,7 +757,7 @@ body.intro-open {
   border-radius: 999px;
   padding: 6px 12px;
 
-  background: rgba(255,255,255,0.78);
+  background: rgba(255, 222, 120, 0.88);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 
@@ -812,6 +812,12 @@ body.intro-open {
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
+
+  color: #333;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .wishlist-body {
@@ -849,7 +855,7 @@ body.intro-open {
   padding: 10px 14px;
   margin-top: 4px;
 
-  background: #f2a23a;
+  background: #f0c84b;
   color: white;
   font-size: 14px;
   font-family: sans-serif;
@@ -865,11 +871,13 @@ body.intro-open {
 @media (max-width: 767px) {
   #wishlist-toggle {
     right: 12px;
+    left: auto;
     bottom: 78px;
   }
 
   #wishlist-panel {
     right: 12px;
+    left: auto;
     bottom: 118px;
     width: min(300px, calc(100vw - 32px));
     max-height: 60vh;
@@ -879,7 +887,6 @@ body.intro-open {
     max-height: calc(60vh - 54px);
   }
 }
-
   </style>
 </head>
 
@@ -930,17 +937,17 @@ body.intro-open {
 
     <label>
       地點名稱
-      <input id="wish-name" type="text" placeholder="例如：蘭嶼">
+      <input id="wish-name" type="text" placeholder="">
     </label>
 
     <label>
       緯度 lat
-      <input id="wish-lat" type="number" step="any" placeholder="例如：22.05">
+      <input id="wish-lat" type="number" step="any" placeholder="">
     </label>
 
     <label>
       經度 lng
-      <input id="wish-lng" type="number" step="any" placeholder="例如：121.55">
+      <input id="wish-lng" type="number" step="any" placeholder="">
     </label>
 
     <label>
