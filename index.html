@@ -757,7 +757,7 @@ body.intro-open {
   border-radius: 999px;
   padding: 6px 12px;
 
-  background: rgba(255, 222, 120, 0.88);
+  background: rgba(255,255,255,0.78);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
 
@@ -765,6 +765,11 @@ body.intro-open {
   font-size: 13px;
   font-family: sans-serif;
   cursor: pointer;
+}
+
+#wishlist-toggle.active {
+  background: rgba(255,255,255,0.92);
+  font-weight: 700;
 }
 
 /* ===== 願望清單面板 ===== */
@@ -887,6 +892,22 @@ body.intro-open {
     max-height: calc(60vh - 54px);
   }
 }
+
+@media (max-width: 767px) {
+  #place-index-toggle,
+  #wishlist-toggle {
+    right: 18px;
+    left: auto;
+  }
+
+  #place-index-toggle {
+    bottom: 44px;
+  }
+
+  #wishlist-toggle {
+    bottom: 78px;
+  }
+}     
   </style>
 </head>
 
@@ -1053,7 +1074,9 @@ const wishesRef = wishDb.ref("wishes");
 
 /* 願望清單 marker */
 let wishMarkers = {};
-const wishIcon = createPinIcon("#f6c343")
+let latestWishes = {};
+let wishlistVisible = false; // 一開始不顯示願望點
+const wishIcon = createPinIcon("#f6c343");
 
 
 /* 🌿 4. 資料 */
@@ -3024,11 +3047,23 @@ const wishlistPanel = document.getElementById("wishlist-panel");
 const wishlistClose = document.getElementById("wishlist-close");
 
 wishlistToggle.addEventListener("click", function () {
-  wishlistPanel.classList.toggle("show");
+  wishlistVisible = !wishlistVisible;
+  wishlistPanel.classList.toggle("show", wishlistVisible);
+
+  if (wishlistVisible) {
+    renderWishMarkers();
+    wishlistToggle.classList.add("active");
+  } else {
+    clearWishMarkers();
+    wishlistToggle.classList.remove("active");
+  }
 });
 
 wishlistClose.addEventListener("click", function () {
+  wishlistVisible = false;
   wishlistPanel.classList.remove("show");
+  wishlistToggle.classList.remove("active");
+  clearWishMarkers();
 });
 
 /* 🌟 Google 登入 / 登出 */
@@ -3119,15 +3154,27 @@ wishSubmit.addEventListener("click", function () {
 
 /* 🌟 即時讀取 Firebase 願望清單 */
 wishesRef.on("value", function (snapshot) {
-  const wishes = snapshot.val() || {};
+  latestWishes = snapshot.val() || {};
 
+  if (wishlistVisible) {
+    renderWishMarkers();
+  } else {
+    clearWishMarkers();
+  }
+});
+
+function clearWishMarkers() {
   Object.keys(wishMarkers).forEach(function (id) {
     map.removeLayer(wishMarkers[id]);
   });
   wishMarkers = {};
+}
 
-  Object.keys(wishes).forEach(function (id) {
-    const wish = wishes[id];
+function renderWishMarkers() {
+  clearWishMarkers();
+
+  Object.keys(latestWishes).forEach(function (id) {
+    const wish = latestWishes[id];
 
     if (
       !wish ||
@@ -3140,8 +3187,7 @@ wishesRef.on("value", function (snapshot) {
 
     const popupHtml = `
       <div style="font-family:sans-serif; min-width:160px;">
-        <b>${escapeHtml(wish.name)}</b><br>
-        <span style="color:#666; font-size:12px;">願望地點</span>
+        <b>${escapeHtml(wish.name)}</b>
         ${wish.note ? `<p style="margin:6px 0 0; font-size:13px;">${escapeHtml(wish.note)}</p>` : ""}
         ${wish.authorName ? `<p style="margin:6px 0 0; font-size:12px; color:#888;">by ${escapeHtml(wish.authorName)}</p>` : ""}
       </div>
@@ -3153,7 +3199,7 @@ wishesRef.on("value", function (snapshot) {
 
     wishMarkers[id] = marker;
   });
-});
+}
 
 /* 避免輸入內容破壞 HTML */
 function escapeHtml(text) {
