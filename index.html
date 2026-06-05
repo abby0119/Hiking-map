@@ -908,6 +908,30 @@ body.intro-open {
     bottom: 78px;
   }
 }     
+
+.wishlist-marker-control {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+#wish-marker-toggle {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+
+  background: #f0c84b;
+  color: #4f3b00;
+  font-size: 13px;
+  font-family: sans-serif;
+  cursor: pointer;
+}
+
+#wish-marker-toggle.active {
+  background: #e0b72e;
+  color: #3f3000;
+}    
   </style>
 </head>
 
@@ -950,6 +974,12 @@ body.intro-open {
   </div>
 
   <div class="wishlist-body">
+
+    <div class="wishlist-marker-control">
+    <button id="wish-marker-toggle" type="button">顯示願望點</button>
+    <p id="wish-marker-status">願望點目前未顯示</p>
+  </div>
+    
     <div id="auth-area">
       <button id="google-login-btn" type="button">使用 Google 登入以新增願望</button>
       <button id="google-logout-btn" type="button" style="display:none;">登出</button>
@@ -3047,25 +3077,39 @@ const wishlistPanel = document.getElementById("wishlist-panel");
 const wishlistClose = document.getElementById("wishlist-close");
 
 wishlistToggle.addEventListener("click", function () {
-  wishlistVisible = !wishlistVisible;
-  wishlistPanel.classList.toggle("show", wishlistVisible);
-
-  if (wishlistVisible) {
-    renderWishMarkers();
-    wishlistToggle.classList.add("active");
-  } else {
-    clearWishMarkers();
-    wishlistToggle.classList.remove("active");
-  }
+  wishlistPanel.classList.toggle("show");
 });
 
 wishlistClose.addEventListener("click", function () {
-  wishlistVisible = false;
   wishlistPanel.classList.remove("show");
-  wishlistToggle.classList.remove("active");
-  clearWishMarkers();
 });
 
+const wishMarkerToggle = document.getElementById("wish-marker-toggle");
+
+function updateWishMarkerToggleUI() {
+  if (wishlistVisible) {
+    wishMarkerToggle.textContent = "隱藏";
+    wishMarkerToggle.classList.add("active");
+  } else {
+    wishMarkerToggle.textContent = "顯示";
+    wishMarkerToggle.classList.remove("active");
+  }
+}
+
+wishMarkerToggle.addEventListener("click", function () {
+  wishlistVisible = !wishlistVisible;
+
+  if (wishlistVisible) {
+    renderWishMarkers();
+  } else {
+    clearWishMarkers();
+  }
+
+  updateWishMarkerToggleUI();
+});
+
+updateWishMarkerToggleUI();  
+  
 /* 🌟 Google 登入 / 登出 */
 const googleLoginBtn = document.getElementById("google-login-btn");
 const googleLogoutBtn = document.getElementById("google-logout-btn");
