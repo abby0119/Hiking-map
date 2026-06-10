@@ -635,7 +635,7 @@ body.intro-open {
 
    background:
     linear-gradient(rgba(255,255,255,0.35), rgba(255,255,255,0.35)),
-    url("p_background_2.jpg");
+    url("p_background_3.jpg");
 
   background-size: cover;
   background-position: center;
@@ -662,6 +662,13 @@ body.intro-open {
  
   position: relative;
   z-index: 1;
+
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+#birthday-intro-card.card-hide {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
 }
 
 #birthday-intro-card h1 {
@@ -3378,15 +3385,23 @@ document.addEventListener('wheel', function (e) {
 document.body.classList.add("intro-open");
 
 const birthdayIntro = document.getElementById("birthday-intro");
+const birthdayCard = document.getElementById("birthday-intro-card");
 const birthdayEnterBtn = document.getElementById("birthday-enter-btn");
 
 birthdayEnterBtn.addEventListener("click", function () {
-  birthdayIntro.classList.add("hide");
-  document.body.classList.remove("intro-open");
+  // 先讓小卡淡出
+  birthdayCard.classList.add("card-hide");
 
+  // 小卡淡出後，再讓背景圖片淡出
+  setTimeout(function () {
+    birthdayIntro.classList.add("hide");
+    document.body.classList.remove("intro-open");
+  }, 450);
+
+  // 等背景也淡出後，完全移除開場畫面
   setTimeout(function () {
     birthdayIntro.style.display = "none";
-  }, 1200);
+  }, 1650);
 });
 
 /* 🌟 願望清單面板開關 */
