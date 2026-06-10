@@ -650,20 +650,68 @@ body.intro-open {
 
 #birthday-intro-card {
   width: min(340px, calc(100vw - 32px));
-  background: rgba(255,255,255,0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 24px;
-  padding: 28px 24px 24px;
+  min-height: 340px;
+
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255,255,255,0.78) 0 18px, transparent 19px),
+    radial-gradient(circle at 72% 82%, rgba(173,226,241,0.24) 0 70px, transparent 72px),
+    rgba(255,255,255,0.48);
+
+  backdrop-filter: blur(14px) saturate(1.18);
+  -webkit-backdrop-filter: blur(14px) saturate(1.18);
+
+  border: 1.5px solid rgba(255,255,255,0.72);
+  border-radius: 46% 54% 50% 50% / 48% 45% 55% 52%;
+
+  padding: 34px 28px 30px;
   box-sizing: border-box;
   text-align: center;
-  box-shadow: 0 14px 40px rgba(0,0,0,0.18);
+
+  box-shadow:
+    inset 10px 10px 24px rgba(255,255,255,0.42),
+    inset -10px -12px 26px rgba(92,174,205,0.16),
+    0 18px 46px rgba(48,118,150,0.22);
+
   font-family: sans-serif;
- 
   position: relative;
   z-index: 1;
+  overflow: hidden;
 
   transition: opacity 0.45s ease;
+}
+
+#birthday-intro-card::before {
+  content: "";
+  position: absolute;
+  left: 42px;
+  top: 34px;
+  width: 88px;
+  height: 36px;
+
+  border-top: 2px solid rgba(255,255,255,0.8);
+  border-radius: 50%;
+  transform: rotate(-24deg);
+
+  pointer-events: none;
+}
+
+#birthday-intro-card::after {
+  content: "";
+  position: absolute;
+  right: 34px;
+  bottom: 34px;
+  width: 54px;
+  height: 54px;
+
+  background: radial-gradient(circle, rgba(142,219,238,0.22), transparent 68%);
+  border-radius: 50%;
+
+  pointer-events: none;
+}
+
+#birthday-intro-card > * {
+  position: relative;
+  z-index: 2;
 }
 
 #birthday-intro-card.card-hide {
@@ -719,9 +767,10 @@ body.intro-open {
 
 @media (max-width: 767px) {
   #birthday-intro-card {
-    width: min(280px, calc(100vw - 64px));
-    padding: 24px 18px 20px;
-    border-radius: 20px;
+    width: min(270px, calc(100vw - 92px));
+    min-height: 270px;
+    padding: 30px 20px 24px;
+    border-radius: 47% 53% 51% 49% / 46% 45% 55% 54%;
   }
 
   #birthday-intro-card h1 {
