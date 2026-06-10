@@ -3250,31 +3250,40 @@ updateTimeline(0);
 const placeSearchInput = document.getElementById("place-search-input");
 const searchResults = document.getElementById("search-results");
 
-function getSearchTextFromItem(item) {
-  const date = item[0] || "";
+function getSearchTextFromEntry(entry) {
+  const item = entry.item;
   const place = item[3] || "";
+
+  let text = `${place}`;
+
+  // 多次造訪的地點：只搜尋該次 visit 的內容
+  if (entry.type === "repeat" && Array.isArray(item[8]) && item[8][entry.visitIndex]) {
+    const visit = item[8][entry.visitIndex];
+
+    text += ` ${visit.date || ""}`;
+    text += ` ${visit.route || ""}`;
+    text += ` ${visit.note || ""}`;
+
+    if (Array.isArray(visit.photos)) {
+      visit.photos.forEach(function(photo) {
+        text += ` ${photo.title || ""}`;
+      });
+    }
+
+    return text.toLowerCase();
+  }
+
+  // 一般單次地點：搜尋該筆地點自己的內容
+  const date = item[0] || "";
   const route = item[4] || "";
   const photos = item[5];
   const note = item[6] || "";
-  const visits = item[8];
 
-  let text = `${date} ${place} ${route} ${note}`;
+  text += ` ${date} ${route} ${note}`;
 
   if (Array.isArray(photos)) {
     photos.forEach(function(photo) {
       text += ` ${photo.title || ""}`;
-    });
-  }
-
-  if (Array.isArray(visits)) {
-    visits.forEach(function(visit) {
-      text += ` ${visit.date || ""} ${visit.route || ""} ${visit.note || ""}`;
-
-      if (Array.isArray(visit.photos)) {
-        visit.photos.forEach(function(photo) {
-          text += ` ${photo.title || ""}`;
-        });
-      }
     });
   }
 
@@ -3312,8 +3321,8 @@ function renderSearchResults(keyword) {
   }
 
   const matched = placeMarkers.filter(function(entry) {
-    return getSearchTextFromItem(entry.item).includes(q);
-  });
+  return getSearchTextFromEntry(entry).includes(q);
+});
 
   searchResults.classList.add("show");
 
