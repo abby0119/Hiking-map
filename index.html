@@ -252,8 +252,26 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain; /* 保持完整圖片 */
+  object-fit: contain;
   background: #000;
+
+  transform:
+    translate(var(--photo-x, 0px), var(--photo-y, 0px))
+    scale(var(--photo-scale, 1));
+  transform-origin: center center;
+  transition: transform 0.12s ease;
+
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  user-drag: none;
+  touch-action: none;
+}
+
+#photo-viewer-img.dragging {
+  cursor: grabbing;
+  transition: none;
 }
 
 #timeline-wrap {
@@ -1381,7 +1399,7 @@ body.intro-open {
 
 <div id="photo-viewer">
   <button id="photo-viewer-close" type="button" aria-label="關閉照片"></button>
-  <img id="photo-viewer-img" src="">
+  <img id="photo-viewer-img" src="" draggable="false">
 </div>
   
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -1409,8 +1427,10 @@ const iconColor = {
 };
 
 let viewerPhotos = [];
-let viewerIndex = 0;  
-
+let viewerIndex = 0;
+let viewerScale = 1;
+let viewerOffsetX = 0;
+let viewerOffsetY = 0;
 let placeMarkers = [];
 
 /* 🌿 3. 水滴 icon */
@@ -3167,9 +3187,85 @@ function renderPhotoViewer() {
   const img = document.getElementById('photo-viewer-img');
   if (!viewerPhotos.length) return;
 
+  viewerScale = 1;
+  viewerOffsetX = 0;
+  viewerOffsetY = 0;
+
   img.src = viewerPhotos[viewerIndex].img;
   img.alt = viewerPhotos[viewerIndex].title || "";
+
+  applyPhotoZoom();
 }
+
+function applyPhotoZoom() {
+  const img = document.getElementById('photo-viewer-img');
+
+  img.style.setProperty('--photo-scale', viewerScale);
+  img.style.setProperty('--photo-x', viewerOffsetX + 'px');
+  img.style.setProperty('--photo-y', viewerOffsetY + 'px');
+}
+
+let isPhotoDragging = false;
+let dragStartX = 0;
+let dragStartY = 0;
+let dragBaseX = 0;
+let dragBaseY = 0;
+
+function clampPhotoOffset() {
+  const maxX = (window.innerWidth * (viewerScale - 1)) / 2;
+  const maxY = (window.innerHeight * (viewerScale - 1)) / 2;
+
+  viewerOffsetX = Math.max(-maxX, Math.min(maxX, viewerOffsetX));
+  viewerOffsetY = Math.max(-maxY, Math.min(maxY, viewerOffsetY));
+}
+
+const photoViewerImg = document.getElementById('photo-viewer-img');
+
+photoViewerImg.addEventListener('dragstart', function(e) {
+  e.preventDefault();
+});
+
+photoViewerImg.addEventListener('pointerdown', function(e) {
+  if (viewerScale <= 1) return;
+
+  e.preventDefault();
+
+  isPhotoDragging = true;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+
+  dragBaseX = viewerOffsetX;
+  dragBaseY = viewerOffsetY;
+
+  photoViewerImg.classList.add('dragging');
+  photoViewerImg.setPointerCapture(e.pointerId);
+});
+
+photoViewerImg.addEventListener('pointermove', function(e) {
+  if (!isPhotoDragging) return;
+
+  const dragSpeed = 1.6;
+
+  viewerOffsetX = dragBaseX + (e.clientX - dragStartX) * dragSpeed;
+  viewerOffsetY = dragBaseY + (e.clientY - dragStartY) * dragSpeed;
+
+  clampPhotoOffset();
+  applyPhotoZoom();
+});
+
+photoViewerImg.addEventListener('pointerup', function(e) {
+  isPhotoDragging = false;
+  photoViewerImg.classList.remove('dragging');
+
+  try {
+    photoViewerImg.releasePointerCapture(e.pointerId);
+  } catch (err) {}
+});
+
+photoViewerImg.addEventListener('pointercancel', function() {
+  isPhotoDragging = false;
+  photoViewerImg.classList.remove('dragging');
+});
 
 function showNextPhoto() {
   if (!viewerPhotos.length) return;
@@ -3193,6 +3289,11 @@ function closePhotoViewer() {
   document.getElementById('photo-viewer-img').alt = "";
   viewerPhotos = [];
   viewerIndex = 0;
+
+  viewerScale = 1;
+  viewerOffsetX = 0;
+  viewerOffsetY = 0;
+  applyPhotoZoom();
 }
 
 document.getElementById('photo-viewer-close').addEventListener('click', function (e) {
@@ -3206,6 +3307,37 @@ document.addEventListener('keydown', function (e) {
   // 只有在大圖 viewer 打開時才作用
   if (!viewer.classList.contains('show')) return;
 
+  // Ctrl + / Ctrl - 縮放滿版照片
+  if (e.ctrlKey && (e.key === '+' || e.key === '=')) {
+    e.preventDefault();
+    viewerScale = Math.min(viewerScale + 0.3, 4);
+    applyPhotoZoom();
+    return;
+  }
+
+  if (e.ctrlKey && (e.key === '-' || e.key === '_')) {
+    e.preventDefault();
+    viewerScale = Math.max(viewerScale - 0.3, 1);
+
+   if (viewerScale === 1) {
+     viewerOffsetX = 0;
+     viewerOffsetY = 0;
+   }
+
+   applyPhotoZoom();
+    return;
+  }
+
+  // Ctrl + 0 回到原始大小
+  if (e.ctrlKey && e.key === '0') {
+    e.preventDefault();
+    viewerScale = 1;
+    viewerOffsetX = 0;
+    viewerOffsetY = 0;
+    applyPhotoZoom();
+    return;
+  }
+
   if (e.key === 'ArrowRight') {
     showNextPhoto();
   } else if (e.key === 'ArrowLeft') {
@@ -3213,6 +3345,8 @@ document.addEventListener('keydown', function (e) {
   } else if (e.key === 'Escape') {
     closePhotoViewer();
   }
+
+
 });
 
 
