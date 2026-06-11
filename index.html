@@ -122,31 +122,42 @@
   }
 }
 
-/* 💻 平板以上 */
+/* 💻 平板以上：iPad 直式 / 電腦基本設定 */
 @media (min-width: 768px) {
   .overlay-card {
-    width: min(420px, calc(100vw - 40px));
-    max-height: min(88vh, 820px);
+    width: min(500px, calc(100vw - 80px));
+    max-height: min(88vh, 900px);
   }
 
   .overlay-body {
-    padding: 16px 15px 16px;
+    padding: 20px 20px 22px;
+    font-size: 16px;
   }
 
   .photo-scroll img {
-    height: clamp(260px, 38vh, 380px) !important;
+    height: clamp(300px, 44vh, 500px) !important;
+  }
+
+  .overlay-body h2,
+  .overlay-body h3 {
+    font-size: 22px;
+  }
+
+  .overlay-body p {
+    font-size: 16px;
+    line-height: 1.75;
   }
 }
 
-/* 🔄 橫向（平板橫放 / 電腦） */
+/* 🔄 橫向：iPad 橫放 / 電腦大螢幕再放大一點 */
 @media (min-width: 768px) and (orientation: landscape) {
   .overlay-card {
-    width: min(420px, calc(100vw - 40px)); 
-    max-height: 84vh;
+    width: min(520px, calc(100vw - 80px)); 
+    max-height: 88vh;
   }
 
   .photo-scroll img {
-    height: clamp(260px, 38vh, 380px) !important;
+    height: clamp(330px, 48vh, 520px) !important;
   }
 }
     
@@ -634,7 +645,7 @@ body.intro-open {
   overflow: hidden;
 
    background:
-    linear-gradient(rgba(255,255,255,0.35), rgba(255,255,255,0.35)),
+    linear-gradient(rgba(255,255,255,0.35), rgba(255,255,255,0)),
     url("p_background_2.jpg");
 
   background-size: cover;
@@ -756,8 +767,8 @@ body.intro-open {
  #birthday-enter-btn {
   width: auto;
   display: inline-block;
-  padding: 8px 14px;
-  font-size: 13px;
+  padding: 10px 16px;
+  font-size: 14px;
   }
 }
 
@@ -1134,6 +1145,136 @@ body.intro-open {
     max-height: 42vh;
   }
 }    
+
+/* ===== 電腦版 overlay 橫向小卡；手機版維持直式 ===== */
+
+/* 手機版：維持原本順序：標題 → 照片 → note */
+.popup-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-text-area {
+  display: contents;
+}
+
+.popup-info-area {
+  order: 1;
+  width: 100%;
+}
+
+.popup-photo-area {
+  order: 2;
+  width: 100%;
+}
+
+.popup-note-area {
+  order: 3;
+  width: 100%;
+}
+
+/* 電腦／平板以上：左圖右文，螢幕變窄時照片區會跟著縮 */
+@media (min-width: 768px) {
+  .overlay-card {
+    width: min(1120px, calc(100vw - 64px));
+    max-height: min(92vh, 900px);
+  }
+
+  .overlay-body {
+    padding: 32px 24px 30px 36px;
+    font-size: 15px;
+  }
+
+  .popup-layout {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 18px;
+    width: 100%;
+  }
+
+  .popup-photo-area {
+    order: 1;
+    flex: 1 1 auto;
+    min-width: 0;
+    width: auto;
+    overflow: hidden;
+  }
+
+  .popup-text-area {
+    order: 2;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    width: 175px;
+    flex: 0 0 175px;
+
+    height: clamp(415px, 58vh, 650px);
+    transform: translateY(18px);
+
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 10px 8px 10px;
+    box-sizing: border-box;
+  }
+
+  .popup-info-area,
+  .popup-note-area {
+    width: 100%;
+  }
+
+  .photo-scroll {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding-bottom: 4px;
+    overflow-x: auto;
+  }
+
+  .photo-scroll img {
+    height: clamp(415px, 58vh, 650px) !important;
+  }
+
+  .popup-info-area > div {
+    font-size: 14px !important;
+  }
+
+  .popup-note-area > div {
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+    margin-top: 4px !important;
+  }
+}
+
+/* 橫向：iPad 橫放／電腦大螢幕 */
+@media (min-width: 768px) and (orientation: landscape) {
+  .overlay-card {
+    width: min(1180px, calc(100vw - 64px));
+    max-height: 92vh;
+  }
+
+  .overlay-body {
+    padding: 36px 26px 32px 40px;
+  }
+
+  .popup-layout {
+    gap: 18px;
+  }
+
+  .popup-text-area {
+    width: 175px;
+    flex-basis: 175px;
+
+    height: clamp(415px, 58vh, 650px);
+    transform: translateY(18px);
+  }
+
+  .photo-scroll img {
+    height: clamp(415px, 58vh, 650px) !important;
+  }
+}
   </style>
 </head>
 
@@ -2878,33 +3019,44 @@ function createPhotoHTML(photos, imgHeight = 220) {
 /* 🌿 7. 單次卡片 */
 function createSinglePopup(date, place, route, photos, note) {
   return `
-    <div style="font-size:16px;">
-      🌿 <b>${date}</b><br><br>
-    </div>
+    <div class="popup-layout popup-single-layout">
 
-    <div style="display:flex; align-items:center; gap:4px; font-size:16px;">
-      <span>📍</span>
-      <b>${place}</b>
-    </div>
+      <div class="popup-text-area">
+        <div class="popup-info-area">
+          <div style="font-size:16px;">
+            🌿 <b>${date}</b><br><br>
+          </div>
 
-    <div style="font-size:14px;">
-      ${route}
-      <br><br>
-    </div>
+          <div style="display:flex; align-items:center; gap:4px; font-size:16px;">
+            <span>📍</span>
+            <b>${place}</b>
+          </div>
 
-    ${createPhotoHTML(photos, 220)}
+          <div style="font-size:14px;">
+            ${route}
+            <br><br>
+          </div>
+        </div>
 
-    <div style="
-      font-size:14px;
-      line-height:1.5;
-      margin-top:10px;
-      padding-bottom:8px;
-    ">
-      ${note}
+        <div class="popup-note-area">
+          <div style="
+            font-size:14px;
+            line-height:1.5;
+            margin-top:10px;
+            padding-bottom:8px;
+          ">
+            ${note}
+          </div>
+        </div>
+      </div>
+
+      <div class="popup-photo-area">
+        ${createPhotoHTML(photos, 220)}
+      </div>
+
     </div>
   `;
 }
-
 
 /* 🌿 8. repeat 卡片 */
 function createRepeatPopup(place, visits, markerId) {
@@ -2915,48 +3067,59 @@ function createRepeatPopup(place, visits, markerId) {
   const visit = visits[currentIndex];
 
   return `
-    <div class="visit-nav" style="margin-bottom:8px;">
-      <button
-        type="button"
-        class="visit-btn"
-        onclick="event.stopPropagation(); changeVisit('${markerId}', -1); return false;"
-      >‹</button>
+    <div class="popup-layout popup-repeat-layout">
 
-      <div class="visit-indicator">${currentIndex + 1} / ${visits.length}</div>
+      <div class="popup-text-area">
+        <div class="popup-info-area">
+          <div class="visit-nav" style="margin-bottom:8px;">
+            <button
+              type="button"
+              class="visit-btn"
+              onclick="event.stopPropagation(); changeVisit('${markerId}', -1); return false;"
+            >‹</button>
 
-      <button
-        type="button"
-        class="visit-btn"
-        onclick="event.stopPropagation(); changeVisit('${markerId}', 1); return false;"
-      >›</button>
-    </div>
+            <div class="visit-indicator">${currentIndex + 1} / ${visits.length}</div>
 
-    <div style="font-size:16px;">
-      🌿 <b>${visit.date}</b><br><br>
-    </div>
+            <button
+              type="button"
+              class="visit-btn"
+              onclick="event.stopPropagation(); changeVisit('${markerId}', 1); return false;"
+            >›</button>
+          </div>
 
-    <div style="display:flex; align-items:center; gap:4px; font-size:16px;">
-      <span>📍</span>
-      <b>${place}</b>
-    </div>
+          <div style="font-size:16px;">
+            🌿 <b>${visit.date}</b><br><br>
+          </div>
 
-    <div style="font-size:14px;">
-      ${visit.route}
-      <br><br>
-    </div>
+          <div style="display:flex; align-items:center; gap:4px; font-size:16px;">
+            <span>📍</span>
+            <b>${place}</b>
+          </div>
 
-    ${createPhotoHTML(visit.photos, 200)}
+          <div style="font-size:14px;">
+            ${visit.route}
+            <br><br>
+          </div>
+        </div>
 
-    <div style="
-      font-size:14px;
-      line-height:1.5;
-      margin-top:12px;
-    ">
-      ${visit.note}
+        <div class="popup-note-area">
+          <div style="
+            font-size:14px;
+            line-height:1.5;
+            margin-top:12px;
+          ">
+            ${visit.note}
+          </div>
+        </div>
+      </div>
+
+      <div class="popup-photo-area">
+        ${createPhotoHTML(visit.photos, 200)}
+      </div>
+
     </div>
   `;
 }
-
 
 /* 🌿 9. overlay 開關 */
 function openOverlay(html) {
