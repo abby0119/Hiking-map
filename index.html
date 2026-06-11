@@ -269,6 +269,17 @@
   touch-action: none;
 }
 
+@media (max-width: 767px) {
+  #photo-viewer {
+    touch-action: pan-x pan-y pinch-zoom;
+  }
+
+  #photo-viewer-img {
+    touch-action: pan-x pan-y pinch-zoom;
+    cursor: default;
+  }
+}    
+
 #photo-viewer-img.dragging {
   cursor: grabbing;
   transition: none;
