@@ -3247,7 +3247,56 @@ photoViewerImg.addEventListener('dragstart', function(e) {
   e.preventDefault();
 });
 
+/* ===== 手機兩指縮放照片 ===== */
+let isPinching = false;
+let pinchStartDistance = 0;
+let pinchStartScale = 1;
+
+function getTouchDistance(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+photoViewerImg.addEventListener('touchstart', function(e) {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+
+    isPinching = true;
+    isPhotoDragging = false;
+    photoViewerImg.classList.remove('dragging');
+
+    pinchStartDistance = getTouchDistance(e.touches);
+    pinchStartScale = viewerScale;
+  }
+}, { passive: false });
+
+photoViewerImg.addEventListener('touchmove', function(e) {
+  if (e.touches.length === 2) {
+    e.preventDefault();
+
+    const currentDistance = getTouchDistance(e.touches);
+    const scaleChange = currentDistance / pinchStartDistance;
+
+    viewerScale = Math.max(1, Math.min(pinchStartScale * scaleChange, 4));
+
+    if (viewerScale === 1) {
+      viewerOffsetX = 0;
+      viewerOffsetY = 0;
+    }
+
+    applyPhotoZoom();
+  }
+}, { passive: false });
+
+photoViewerImg.addEventListener('touchend', function(e) {
+  if (e.touches.length < 2) {
+    isPinching = false;
+  }
+});
+
 photoViewerImg.addEventListener('pointerdown', function(e) {
+  if (isPinching) return;
   if (viewerScale <= 1) return;
 
   e.preventDefault();
@@ -3264,6 +3313,7 @@ photoViewerImg.addEventListener('pointerdown', function(e) {
 });
 
 photoViewerImg.addEventListener('pointermove', function(e) {
+  if (isPinching) return;
   if (!isPhotoDragging) return;
 
   const dragSpeed = 1.6;
