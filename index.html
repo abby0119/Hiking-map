@@ -3258,10 +3258,9 @@ function getTouchDistance(touches) {
 }
 
 photoViewerImg.addEventListener('touchstart', function(e) {
-  e.stopPropagation();
-
   if (e.touches.length === 2) {
     e.preventDefault();
+    e.stopPropagation();
 
     isPinching = true;
     isPhotoDragging = false;
@@ -3270,13 +3269,17 @@ photoViewerImg.addEventListener('touchstart', function(e) {
     pinchStartDistance = getTouchDistance(e.touches);
     pinchStartScale = viewerScale;
   }
+
+  // 只有照片已經放大時，單指才交給圖片自己處理
+  if (e.touches.length === 1 && viewerScale > 1) {
+    e.stopPropagation();
+  }
 }, { passive: false });
 
 photoViewerImg.addEventListener('touchmove', function(e) {
-  e.stopPropagation();
-
   if (e.touches.length === 2) {
     e.preventDefault();
+    e.stopPropagation();
 
     const currentDistance = getTouchDistance(e.touches);
     const scaleChange = currentDistance / pinchStartDistance;
@@ -3290,15 +3293,28 @@ photoViewerImg.addEventListener('touchmove', function(e) {
 
     applyPhotoZoom();
   }
+
+  // 放大後的單指拖曳，不要讓外層誤判成切照片或關閉
+  if (e.touches.length === 1 && viewerScale > 1) {
+    e.stopPropagation();
+  }
 }, { passive: false });
 
 photoViewerImg.addEventListener('touchend', function(e) {
-  e.stopPropagation();
+  if (isPinching) {
+    e.stopPropagation();
 
-  if (e.touches.length < 2) {
-    isPinching = false;
+    if (e.touches.length < 2) {
+      isPinching = false;
+    }
+  }
+
+  // 放大狀態下，不讓外層處理滑動關閉
+  if (viewerScale > 1) {
+    e.stopPropagation();
   }
 }, { passive: false });
+
 
 photoViewerImg.addEventListener('pointerdown', function(e) {
   if (isPinching) return;
