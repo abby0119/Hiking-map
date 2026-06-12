@@ -3258,6 +3258,8 @@ function getTouchDistance(touches) {
 }
 
 photoViewerImg.addEventListener('touchstart', function(e) {
+  e.stopPropagation();
+
   if (e.touches.length === 2) {
     e.preventDefault();
 
@@ -3271,6 +3273,8 @@ photoViewerImg.addEventListener('touchstart', function(e) {
 }, { passive: false });
 
 photoViewerImg.addEventListener('touchmove', function(e) {
+  e.stopPropagation();
+
   if (e.touches.length === 2) {
     e.preventDefault();
 
@@ -3289,10 +3293,12 @@ photoViewerImg.addEventListener('touchmove', function(e) {
 }, { passive: false });
 
 photoViewerImg.addEventListener('touchend', function(e) {
+  e.stopPropagation();
+
   if (e.touches.length < 2) {
     isPinching = false;
   }
-});
+}, { passive: false });
 
 photoViewerImg.addEventListener('pointerdown', function(e) {
   if (isPinching) return;
@@ -3997,7 +4003,7 @@ viewerCard.addEventListener('touchmove', function (e) {
 }, { passive: true });
 
 viewerCard.addEventListener('touchend', function (e) {
-  if (isPinching) {
+  if (isPinching || viewerScale > 1) {
     if (e.touches.length === 0) {
       isPinching = false;
     }
