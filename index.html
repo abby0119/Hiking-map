@@ -110,16 +110,17 @@
 /* 📱 手機(直) */
 @media (max-width: 767px) {
   .overlay-card {
-    width: min(320px, calc(100vw - 24px));
+    width: calc(100vw - 56px);
+    max-width: 370px;
     max-height: 84vh;
   }
 
   .overlay-body {
-    padding: 18px 13px 10px;
+    padding: 14px 13px 8px;
   }
 
   .photo-scroll img {
-    height: 270px !important;
+    height: clamp(270px, 68vw, 305px) !important;
   }
 }
 
@@ -1738,7 +1739,7 @@ const data = [
           { img: "p1141115-7.jpg", title: "喜歡你" },
           { img: "p1141115-8.jpg", title: "酷比兜風" },
           { img: "p1141115-9.jpg", title: "蠟梅和我的衣服好搭" },
-          { img: "p1141115-10.jpg", title: "謝謝寶貝送我可愛辣梅花" },
+          { img: "p1141115-10.jpg", title: "謝謝寶貝送我可愛蠟梅花" },
           { img: "p1141115-11.jpg", title: "不願露臉人" }
         ],
         note: "這個週末是好天氣，我們又來草山戰備道踏青，午後的光線照亮了滿山芒花，特別迷人。"
