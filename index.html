@@ -257,7 +257,9 @@
     translate(var(--photo-x, 0px), var(--photo-y, 0px))
     scale(var(--photo-scale, 1));
   transform-origin: center center;
-  transition: transform 0.12s ease;
+  transition:
+  transform 0.18s ease,
+  opacity 0.18s ease;
 
   cursor: grab;
   user-select: none;
@@ -270,6 +272,20 @@
 #photo-viewer-img.dragging {
   cursor: grabbing;
   transition: none;
+}
+
+#photo-viewer-img.photo-changing-left {
+  opacity: 0;
+  transform:
+    translate(calc(var(--photo-x, 0px) - 28px), var(--photo-y, 0px))
+    scale(var(--photo-scale, 1));
+}
+
+#photo-viewer-img.photo-changing-right {
+  opacity: 0;
+  transform:
+    translate(calc(var(--photo-x, 0px) + 28px), var(--photo-y, 0px))
+    scale(var(--photo-scale, 1));
 }
 
 #timeline-wrap {
@@ -3360,20 +3376,40 @@ photoViewerImg.addEventListener('pointercancel', function() {
   photoViewerImg.classList.remove('dragging');
 });
 
-function showNextPhoto() {
+function changePhotoWithAnimation(direction) {
   if (!viewerPhotos.length) return;
-  if (viewerIndex < viewerPhotos.length - 1) {
-    viewerIndex++;
-    renderPhotoViewer();
+
+  const img = document.getElementById('photo-viewer-img');
+
+  if (direction === 'next' && viewerIndex >= viewerPhotos.length - 1) return;
+  if (direction === 'prev' && viewerIndex <= 0) return;
+
+  img.classList.remove('photo-changing-left', 'photo-changing-right');
+
+  if (direction === 'next') {
+    img.classList.add('photo-changing-left');
+  } else {
+    img.classList.add('photo-changing-right');
   }
+
+  setTimeout(function () {
+    if (direction === 'next') {
+      viewerIndex++;
+    } else {
+      viewerIndex--;
+    }
+
+    renderPhotoViewer();
+
+    img.classList.remove('photo-changing-left', 'photo-changing-right');
+  }, 160);
+}
+function showNextPhoto() {
+  changePhotoWithAnimation('next');
 }
 
 function showPrevPhoto() {
-  if (!viewerPhotos.length) return;
-  if (viewerIndex > 0) {
-    viewerIndex--;
-    renderPhotoViewer();
-  }
+  changePhotoWithAnimation('prev');
 }
 
 function closePhotoViewer() {
