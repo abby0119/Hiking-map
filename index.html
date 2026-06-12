@@ -110,7 +110,7 @@
 @media (max-width: 767px) {
   .overlay-card {
     width: min(320px, calc(100vw - 24px));
-    max-height: 82vh;
+    max-height: 84vh;
   }
 
   .overlay-body {
@@ -118,7 +118,7 @@
   }
 
   .photo-scroll img {
-    height: 250px !important;
+    height: 270px !important;
   }
 }
 
@@ -268,17 +268,6 @@
   user-drag: none;
   touch-action: none;
 }
-
-@media (max-width: 767px) {
-  #photo-viewer {
-    touch-action: pan-x pan-y pinch-zoom;
-  }
-
-  #photo-viewer-img {
-    touch-action: pan-x pan-y pinch-zoom;
-    cursor: default;
-  }
-}    
 
 #photo-viewer-img.dragging {
   cursor: grabbing;
@@ -1302,6 +1291,29 @@ body.intro-open {
 
   .photo-scroll img {
     height: clamp(415px, 58vh, 650px) !important;
+  }
+}
+
+/* 手機滿版模式：整組底部控制項往上移，避開系統手勢區 */
+@media (max-width: 767px) {
+  #timeline-wrap {
+    bottom: 34px;
+  }
+
+  #place-index-toggle {
+    bottom: 72px;
+  }
+
+  #wishlist-toggle {
+    bottom: 106px;
+  }
+
+  #place-index-panel {
+    bottom: 72px;
+  }
+
+  #wishlist-panel {
+    bottom: 146px;
   }
 }
   </style>
@@ -3561,8 +3573,9 @@ const searchResults = document.getElementById("search-results");
 function getSearchTextFromEntry(entry) {
   const item = entry.item;
   const place = item[3] || "";
+  const meta = locationMeta[place] || { county: "", district: "" };
 
-  let text = `${place}`;
+  let text = `${place} ${meta.county || ""} ${meta.district || ""}`;
 
   // 多次造訪的地點：只搜尋該次 visit 的內容
   if (entry.type === "repeat" && Array.isArray(item[8]) && item[8][entry.visitIndex]) {
