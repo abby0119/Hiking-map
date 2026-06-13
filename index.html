@@ -12,22 +12,44 @@
     body { margin:0; padding:0; }
     #map { width:100%; height:100vh; }
 
-    .photo-scroll {
+  .photo-scroll {
   display: flex;
   align-items: flex-start;
   overflow-x: auto;
   gap: 8px;
   padding-bottom: 8px;
   -webkit-overflow-scrolling: touch;
-
-  scrollbar-width: none;      /* Firefox */
-  -ms-overflow-style: none;   /* 舊版 Edge / IE */
 }
 
+/* 電腦版：scrollbar 平常隱藏，但滑鼠移到照片區時出現 */
 .photo-scroll::-webkit-scrollbar {
-  display: none;              /* Chrome / Safari / Edge / iPhone Safari */
+  height: 6px;
 }
 
+.photo-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.photo-scroll::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 999px;
+}
+
+.photo-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.28);
+}
+
+/* 手機版：scrollbar 完全隱藏，但仍可左右滑照片 */
+@media (max-width: 767px) {
+  .photo-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .photo-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
     .visit-nav {
       display: flex;
       justify-content: center;
